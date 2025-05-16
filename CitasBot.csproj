@@ -54,6 +54,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -75,6 +78,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Entity\Entity.csproj">
+      <Project>{5da3b0b4-5b63-4b2c-a2d0-c39380e3871f}</Project>
+      <Name>Entity</Name>
+    </ProjectReference>
+    <ProjectReference Include="ServiceBot\ServiceBot.csproj">
+      <Project>{c7df19dd-9463-4f0c-88fc-634cbbddccc0}</Project>
+      <Name>ServiceBot</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
