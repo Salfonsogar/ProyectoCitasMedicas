@@ -8,7 +8,6 @@ namespace Entity
 {
     public class ExamenFisico : BaseEntity
     {
-        public string Analisis { get; set; }
         public string Abdomen { get; set; }
         public string CabezaCuelloCara { get; set; }
         public string SistemaNervioso { get; set; }
