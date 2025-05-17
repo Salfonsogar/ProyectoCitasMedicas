@@ -12,7 +12,6 @@ namespace Entity
         public double Talla { get; set; }
         public double IndiceMasaCorporal { get; set; }
         public int FrecuenciaCardiaca { get; set; }
-        public double Temperatura { get; set; }
         public int PresionArterialDiastolica { get; set; }
         public int PresionArterialSistolica { get; set; }
         public int PresionArterialMedia { get; set; }
