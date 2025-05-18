@@ -44,11 +44,8 @@
     <Compile Include="BaseEntity.cs" />
     <Compile Include="CitaMedica.cs" />
     <Compile Include="Diagnostico.cs" />
-    <Compile Include="EntidadSalud.cs" />
-    <Compile Include="Eps.cs" />
     <Compile Include="Especialidad.cs" />
     <Compile Include="ExamenFisico.cs" />
-    <Compile Include="FormulaMedica.cs" />
     <Compile Include="HistoriaClinica.cs" />
     <Compile Include="Horario.cs" />
     <Compile Include="HorarioCitaMedica.cs" />
