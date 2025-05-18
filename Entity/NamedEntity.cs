@@ -8,6 +8,6 @@ namespace Entity
 {
     public class NamedEntity : BaseEntity
     {
-        public string Nombre { get; set; }
+        public string NombreCompleto { get; set; }
     }
 }
