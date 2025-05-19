@@ -8,8 +8,8 @@ namespace Entity
 {
     public abstract class Persona : NamedEntity
     {
-        public string tipoDocumento { get; set; }
-        public int NroIdentificacion { get; set; }
+        public string TipoDocumento { get; set; }
+        public int NroDocumento { get; set; }
         public char Sexo { get; set; }
         public int Edad { get; set; }
         public string Telefono { get; set; }
