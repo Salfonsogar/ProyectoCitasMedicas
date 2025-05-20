@@ -10,6 +10,9 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using Service;
+using Entity;
+using DAL;
 
 namespace ServiceBot
 {
@@ -17,16 +20,12 @@ namespace ServiceBot
     {
         private readonly TelegramBotClient _botClient;
         private readonly Dictionary<long, EstadoUsuario> _usuario;
-        //private readonly PostgresDbRepository _postgressDbRepository;
-        //private readonly ServiceCita _serviceCita;  
-        //private readonly ServicePaciete _servicePaciete; 
+        private readonly ServicePaciente _servicePaciente;
         public BotService(string token)
         {
             _botClient = new TelegramBotClient(token);
             _usuario = new Dictionary<long, EstadoUsuario>();
-            //_ServiceCita = new serviceCita();
-            //_ServicePaciete = new servicePaciete();
-            //_postgressDbRepository = new PostgresDbRepository();
+            _servicePaciente = new ServicePaciente(new PacienteRepository());
         }
         public async Task StartBotAsync()
         {
@@ -35,7 +34,7 @@ namespace ServiceBot
 
             var receiverOptions = new ReceiverOptions
             {
-                AllowedUpdates = Array.Empty<UpdateType>() 
+                AllowedUpdates = Array.Empty<UpdateType>()
             };
 
             _botClient.StartReceiving(
@@ -85,19 +84,26 @@ namespace ServiceBot
 
                 return;
             }
-
             if (_usuario.TryGetValue(chatId, out var estadoUsuario))
             {
                 if (estadoUsuario.Estado == "Esperando_Identificacion" && message.Text.All(char.IsDigit))
                 {
-                    estadoUsuario.Identificacion = message.Text;
-                    estadoUsuario.Estado = "menu_principal";
+                    bool esValida = await ConfirmarIdentificacionAsync(chatId, message.Text);
+                    if (esValida)
+                    {
+                        estadoUsuario.Identificacion = message.Text;
+                        estadoUsuario.Estado = "menu_principal";
 
-                    await ConfirmarIdentificacionAsync(chatId);
-                    await MostrarMenuPrincipalASync(chatId);
+                        await MostrarMenuPrincipalASync(chatId);
+                    }
                     return;
                 }
-                await GestionarMenuPrincipalASync(message.Text, chatId);
+                else if (estadoUsuario.Estado == "menu_principal")
+                {
+                    await GestionarMenuPrincipalASync(message.Text, chatId);
+                    return;
+                }
+                await _botClient.SendTextMessageAsync(chatId, "⚠️ Por favor, ingresa primero tu número de identificación.");
             }
             else
             {
@@ -113,13 +119,16 @@ namespace ServiceBot
             {
                 await GestionarMenuPrincipalASync(data, chatId);
             }
+            else if (data == "medicina_general" || data == "pediatria" || data == "ginecologia" || data == "odontologia" || data == "psicologia")
+            {
+                await MostrarDisponibilidadAsync(chatId, data);
+            }
             else
             {
                 await EnviarMensajeErrorAsync(chatId);
             }
             await _botClient.AnswerCallbackQueryAsync(callbackQuery.Id);
         }
-
         private Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
             Console.WriteLine($"Ocurrió un error en el bot: {exception.Message}");
@@ -150,17 +159,29 @@ namespace ServiceBot
             _usuario.Remove(chatId);
         }
 
-        public async Task ConfirmarIdentificacionAsync(long chatId)
+        public async Task<bool> ConfirmarIdentificacionAsync(long chatId, string identificacion)
         {
-            var identificacion = _usuario[chatId].Identificacion;
-            string nombreUsuario = "Santiago"; 
+            string nombreUsuario = _servicePaciente.ConsultarNombre(int.Parse(identificacion));
+
+            if (string.IsNullOrEmpty(nombreUsuario))
+            {
+                await _botClient.SendTextMessageAsync(
+                    chatId,
+                    $"❌ No encontramos ningún usuario con la identificación *{identificacion}*. Por favor, intenta de nuevo.",
+                    parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown
+                );
+                return false;
+            }
+
             await _botClient.SendTextMessageAsync(
                 chatId,
                 $"✅ ¡Hola {nombreUsuario}! Hemos verificado tu número de identificación: *{identificacion}*.",
                 parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown
             );
 
+            return true;
         }
+
         public async Task GestionarMenuPrincipalASync(string textolimpio, long chatId)
         {
             switch (textolimpio)
@@ -198,25 +219,6 @@ namespace ServiceBot
                 replyMarkup: inlineKeyboard
             );
         }
-        public async Task MostrarMenuPrincipalSoloCelularASync(long chatId)
-        {
-            var replyKeyboard = new ReplyKeyboardMarkup(new[]
-            {
-                new[] { new KeyboardButton("📅 Agendar cita") },
-                new[] { new KeyboardButton("📋 Modificar citas") },
-                new[] { new KeyboardButton("❌ Cancelar cita") },
-                new[] { new KeyboardButton("🔚 Finalizar") }
-            })
-            {
-                ResizeKeyboard = true,
-                OneTimeKeyboard = false 
-            };
-
-            await _botClient.SendTextMessageAsync(
-                chatId,
-                "¿Qué deseas hacer a continuación? Por favor, selecciona una opción del menú 👇",
-                replyMarkup: replyKeyboard);
-        }
         public static string LimpiarTexto(string texto)
         {
             var textolimpio = new string(texto
@@ -231,13 +233,30 @@ namespace ServiceBot
         }
         public async Task GestionAgendarCitaAsync(long chatId)
         {
-            var mensajeAgendar = "Por favor, selecciona una especialidad médica de la lista a continuación:";
-            await _botClient.SendTextMessageAsync(chatId, mensajeAgendar, parseMode: ParseMode.Markdown);
-            //mostrar un teclado con las especialidades
-            //buscar fecha proxima disponible y preguntar si la desea
-            //si la desea, guardar en la base de datos
-            //si no preguntar si desea otra fecha
-            //validar si la fecha esta disponible
+            await _botClient.SendTextMessageAsync(chatId, "🌟 ¡Bienvenid@ a la sección agendar cita! 🌟");
+            await MostrarMenuEspecialidadesAsync(chatId);
+        }
+        public async Task MostrarMenuEspecialidadesAsync(long chatId)
+        {
+            //llamar a EspecialidadService para obtener la lista de especialidades
+            var inlineKeyboard = new InlineKeyboardMarkup(new[]
+            {
+                new[] { InlineKeyboardButton.WithCallbackData("👩‍⚕️ Medicina General", "medicina_general") },
+                new[] { InlineKeyboardButton.WithCallbackData("👨‍⚕️ Pediatría", "pediatria") },
+                new[] { InlineKeyboardButton.WithCallbackData("👩‍⚕️ Ginecología", "ginecologia") },
+                new[] { InlineKeyboardButton.WithCallbackData("👨‍⚕️ Odontología", "odontologia") },
+                new[] { InlineKeyboardButton.WithCallbackData("👩‍⚕️ Psicología", "psicologia") }
+            });
+            await _botClient.SendTextMessageAsync(
+                chatId: chatId,
+                text: "¿Qué especialidad médica deseas agendar? Por favor, selecciona una opción 👇",
+                replyMarkup: inlineKeyboard
+            );
+        }
+        public async Task MostrarDisponibilidadAsync(long chatId, string especialidad)
+        {
+            await _botClient.SendTextMessageAsync(chatId, $"Has seleccionado la especialidad: {especialidad}.");
+            //llamar a DisponibilidadService para obtener la disponibilidad segun la especialidad
         }
         public async Task GestionModificarCitaAsync(long chatId)
         {
@@ -262,56 +281,6 @@ namespace ServiceBot
             //validar si la fecha esta disponible
             //si no esta disponible preguntar si desea otra fecha
             //si no desea otra fecha, cancelar la cita
-        }
-        private async Task PrimerHandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
-        {
-            if (update.Type != UpdateType.Message || update.Message is null || update.Message.Text is null)
-                return;
-
-            var message = update.Message;
-            var chatId = message.Chat.Id;
-            var texto = LimpiarTexto(message.Text.ToLower());
-
-            if (texto == "/start" || texto == "hola")
-            {
-                await EnviarMensajeBienvenidaAsync(chatId);
-
-                if (!_usuario.ContainsKey(chatId))
-                {
-                    _usuario[chatId] = new EstadoUsuario { Estado = "Esperando_Identificacion" };
-                }
-            }
-
-            if (_usuario.TryGetValue(chatId, out var estadoUsuario))
-            {
-                if (estadoUsuario.Estado == "Esperando_Identificacion" && message.Text.All(char.IsDigit))
-                {
-                    estadoUsuario.Identificacion = message.Text;
-                    estadoUsuario.Estado = "menu_principal";
-
-                    await ConfirmarIdentificacionAsync(chatId);
-                    await MostrarMenuPrincipalASync(chatId);
-                    if (update.Type == UpdateType.CallbackQuery)
-                    {
-                        var callbackQuery = update.CallbackQuery;
-                        var callbackData = callbackQuery.Data;
-                        if (callbackData == "agendar" || callbackData == "cancelar" || callbackData == "modificar" || callbackData == "salir")
-                        {
-                            await GestionarMenuPrincipalASync(callbackData, chatId);
-                        }
-                        else
-                        {
-                            await EnviarMensajeErrorAsync(chatId);
-                        }
-                    }
-                    return;
-                }
-
-            }
-            else
-            {
-                await EnviarMensajeErrorAsync(chatId);
-            }
         }
     }
 }

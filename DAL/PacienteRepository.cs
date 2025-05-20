@@ -9,22 +9,37 @@ namespace DAL
 {
     public class PacienteRepository : BaseDatos, IRepository<Paciente>
     {
+
         public List<Paciente> Consultar()
         {
             string sentencia = "SELECT p.id_paciente, pr.NOMBRE_COMPLETO, pr.TIPO_DOCUMENTO, pr.NRO_DOCUMENTO, pr.SEXO, pr.EDAD, pr.TELEFONO, pr.CORREO, pr.DIRECCION, pr.FECHA_NACIMIENTO FROM pacientes p JOIN personas pr ON p.ID_PERSONA = pr.ID_PERSONA;";
             List<Paciente> listaP = new List<Paciente>();
-            NpgsqlCommand cmd = new NpgsqlCommand(sentencia, conexion);
 
-            AbrirConexion();
-            NpgsqlDataReader reader = cmd.ExecuteReader();
-
-            while (reader.Read())
+            try
             {
-                listaP.Add(Mappear(reader));
+                NpgsqlCommand cmd = new NpgsqlCommand(sentencia, conexion);
+                AbrirConexion();
+                using (NpgsqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        listaP.Add(Mappear(reader));
+                    }
+                }
             }
-            CerrarConexion();
-            return listaP;
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al consultar pacientes: {ex.Message}");
+                // Opcional: puedes loggear más detalles si lo deseas
+            }
+            finally
+            {
+                CerrarConexion();
+            }
+
+            return listaP; // Siempre retorna al menos una lista vacía
         }
+
 
         private Paciente Mappear(NpgsqlDataReader reader)
         {
