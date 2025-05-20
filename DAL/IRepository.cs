@@ -1,4 +1,5 @@
 ﻿using Entity;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace DAL
     {
         Task<string> Agregar(T entity);
         List<T> Consultar();
-        string Modificar(T entity);
+        Task<string> Modificar(T entity);
         Task<string> Eliminar(int id);
     }
 }

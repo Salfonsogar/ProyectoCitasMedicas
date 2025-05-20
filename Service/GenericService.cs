@@ -47,7 +47,7 @@ namespace Service
             }
         }
 
-        public virtual string Modificar(T entity)
+        public virtual async Task<string> Modificar(T entity)
         {
             try
             {
@@ -55,7 +55,8 @@ namespace Service
                 {
                     return "Error: La entidad no puede ser nula.";
                 }
-                string resultado = repository.Modificar(entity);
+
+                string resultado = await repository.Modificar(entity);
 
                 if (string.IsNullOrWhiteSpace(resultado))
                 {
@@ -67,10 +68,10 @@ namespace Service
             catch (Exception ex)
             {
                 Console.WriteLine($"Error en Modificar: {ex.Message}");
-
                 return $"Error inesperado al modificar: {ex.Message}";
             }
         }
+
 
         public virtual async Task<string> Eliminar(int id)
         {
