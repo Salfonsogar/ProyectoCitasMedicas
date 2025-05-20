@@ -9,9 +9,6 @@ namespace DAL
 {
     public interface IRepository<T>
     {
-        Task<string> Agregar(T entity);
         List<T> Consultar();
-        string Modificar(T entity);
-        Task<string> Eliminar(int id);
     }
 }

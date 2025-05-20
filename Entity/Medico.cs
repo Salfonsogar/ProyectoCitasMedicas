@@ -9,7 +9,6 @@ namespace Entity
     public class Medico : Persona
     {
         public int IdMedico { get; set; }
-        public int IdClinica { get; set; }
         public int IdEspecialidad { get; set; }
         public int IdHorarioMedico { get; set; }
         public List<CitaMedica> CitaMedicas { get; set; } 
