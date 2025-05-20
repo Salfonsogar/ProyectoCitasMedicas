@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Entity
 {
-    public class CitaMedica : NamedEntity
+    public class CitaMedica : BaseEntity
     {
         public int IdMedico { get; set; }
         public int IdPaciente { get; set; }
