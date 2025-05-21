@@ -68,7 +68,7 @@ namespace DAL
             string id_medico = await EjecutarSentenciaDB($"INSERT INTO medicos (id_persona,id_especialidad,id_horario_medico) VALUES ({id_persona},{entity.IdEspecialidad},{entity.IdHorarioMedico}) RETURNING id_medico;");
             return $"El medico con el ID {id_medico} fue agregado exitosamente";
         }
-        public  async Task<string> Agregar(Medico entityM, string especialidadId, string horarioMedicoId)
+        public async Task<string> Agregar(Medico entityM, string especialidadId, string horarioMedicoId)
         {
             string id_persona = await EjecutarSentenciaDB($"INSERT INTO personas (nombre_completo, tipo_documento, nro_documento, sexo, edad, telefono, correo, direccion, fecha_nacimiento) VALUES ('{entityM.NombreCompleto}', '{entityM.TipoDocumento}',{entityM.NroDocumento},'{entityM.Sexo}',{entityM.Edad},'{entityM.Telefono}','{entityM.Correo}','{entityM.Direccion}','{entityM.FechaNacimiento.ToString("yyyy-MM-dd")}') RETURNING id_persona;");
             string id_medico = await EjecutarSentenciaDB($"INSERT INTO medicos (id_persona,id_especialidad,id_horario_medico) VALUES ({id_persona},{especialidadId},{horarioMedicoId}) RETURNING id_medico;");

@@ -10,7 +10,8 @@ namespace Service
     where T : Persona
     where R : IRepository<T>
     {
-        public GenericPersonaService(R repository) : base(repository) {
+        public GenericPersonaService(R repository) : base(repository)
+        {
         }
 
         public virtual string ConsultarNombre(int identificacion)
