@@ -47,7 +47,7 @@ namespace DAL
         {
             Especialidad espe = new Especialidad();
             espe.Id = (int)reader["id_especialidad"];
-            espe.NombreCompleto = (string)reader["nombre_completo"];
+            espe.NombreCompleto = (string)reader["nombre"];
 
             return espe;
         }

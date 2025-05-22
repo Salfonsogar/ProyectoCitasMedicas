@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Service
 {
-    public class ServicePaciente : GenericPersonaService<Paciente, PacienteRepository>
+    public class PacienteService : GenericPersonaService<Paciente,PacienteRepository>
     {
-        public ServicePaciente(PacienteRepository repository) : base(repository)
+        public PacienteService(PacienteRepository repository) : base(repository)
         {
         }
     }

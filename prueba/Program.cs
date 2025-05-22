@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Service;
 using DAL;
 using Entity;
 
@@ -12,16 +13,33 @@ namespace prueba
     {
         static async Task Main()
         {
-            CitaMedicaRepository Prepo = new CitaMedicaRepository();
+            var serviceM = new MedicoService(new MedicoRepository());
+            var serviceH = new HorarioMedicoService(new HorarioMedicoRepository());
 
-            List<CitaMedica> lista = Prepo.Consultar();
+            var medicos = serviceM.FiltrarMedicosPorEspecialidad(1);
 
-            foreach (var cita in lista)
-            {
-                Console.WriteLine(
-                    $"ID: {cita.Id}, Paciente: {cita.paciente.NombreCompleto}, Medico: {cita.medico.NombreCompleto}, Fecha y hora: {cita.horariocm.FechaHora}, Hora final: {cita.horariocm.HoraFin}, estado: {cita.Estado}"
-                    );
-            }
+                Console.WriteLine($"✅ Médicos encontrados para la especialidad 1:");
+                foreach (var medico in medicos)
+                {
+                    Console.WriteLine($"- {medico.NombreCompleto}");
+                    Console.WriteLine($"  ID: {medico.IdMedico}, Especialidad: {medico.IdEspecialidad}, Horario: {medico.IdHorarioMedico}");
+                    var h = serviceH.Consultar().Where(Ho => Ho.Id == medico.Id);
+                    foreach (var item in h)
+                    {
+                        Console.WriteLine($"fecha: {item.HoraInicio}-{item.HoraFin}");
+                    }
+                }
+
+            //    CitaMedicaRepository Prepo = new CitaMedicaRepository();
+
+            //    List<CitaMedica> lista = Prepo.Consultar();
+
+            //    foreach (var cita in lista)
+            //    {
+            //        Console.WriteLine(
+            //            $"ID: {cita.Id}, Paciente: {cita.paciente.NombreCompleto}, Medico: {cita.medico.NombreCompleto}, Fecha y hora: {cita.horariocm.FechaHora}, Hora final: {cita.horariocm.HoraFin}, estado: {cita.Estado}"
+            //            );
+            //    }
             //String idHorarioCM = await Prepo.Agregar(new HorarioCitaMedica
             //{
             //    FechaHora = new DateTime(2025, 5, 21, 9, 0, 0),

@@ -50,6 +50,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CitasBot.csproj">
+      <Project>{aa53126f-7dd2-4f72-85c2-597c4dacac4f}</Project>
+      <Name>CitasBot</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DAL\DAL.csproj">
       <Project>{54c70c62-2867-468d-aae0-90361c665241}</Project>
       <Name>DAL</Name>
@@ -57,6 +61,14 @@
     <ProjectReference Include="..\Entity\Entity.csproj">
       <Project>{5da3b0b4-5b63-4b2c-a2d0-c39380e3871f}</Project>
       <Name>Entity</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ServiceBot\ServiceBot.csproj">
+      <Project>{c7df19dd-9463-4f0c-88fc-634cbbddccc0}</Project>
+      <Name>ServiceBot</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Service\Service.csproj">
+      <Project>{eea37c7a-b470-460d-b0a0-5037a136c514}</Project>
+      <Name>Service</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

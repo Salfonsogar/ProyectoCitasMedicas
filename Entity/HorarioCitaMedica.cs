@@ -1,26 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Entity;
+using System;
 
-namespace Entity
+public class HorarioCitaMedica : Horario
 {
-    public class HorarioCitaMedica : Horario
+    public DateTime FechaHora { get; set; }
+
+    public static readonly TimeSpan DuracionDefecto = TimeSpan.FromMinutes(30);
+
+    public TimeSpan Duracion = DuracionDefecto;
+
+    public override TimeSpan HoraInicio
     {
-        public DateTime FechaHora { get; set; }
-        public TimeSpan Duracion { get; set; }
-        public override TimeSpan HoraInicio
-        {
-            get => FechaHora.TimeOfDay;
-            set => FechaHora = FechaHora.Date + value;
-        }
+        get => FechaHora.TimeOfDay;
+        set => FechaHora = FechaHora.Date + value;
+    }
 
-        public override TimeSpan HoraFin
-        {
-            get => FechaHora.TimeOfDay + Duracion;
-            set => Duracion = value - FechaHora.TimeOfDay;
-        }
-
+    public override TimeSpan HoraFin
+    {
+        get => FechaHora.TimeOfDay + Duracion;
+        set => Duracion = value - FechaHora.TimeOfDay;
+    }
+    public HorarioCitaMedica(DateTime fechaHora)
+    {
+        FechaHora = fechaHora;
+    }
+    public HorarioCitaMedica()
+    {
     }
 }

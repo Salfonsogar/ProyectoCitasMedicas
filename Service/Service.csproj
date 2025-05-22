@@ -41,11 +41,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CitaMedicaService.cs" />
+    <Compile Include="EspecialidadesService.cs" />
+    <Compile Include="FechaDisponibleDto.cs" />
     <Compile Include="GenericPersonaService.cs" />
     <Compile Include="GenericService.cs" />
+    <Compile Include="HorarioCitaMedicaService.cs" />
+    <Compile Include="HorarioMedicoService.cs" />
     <Compile Include="IService.cs" />
+    <Compile Include="MedicoService.cs" />
+    <Compile Include="PacienteService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServicePaciente.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DAL\DAL.csproj">

@@ -13,6 +13,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 using Service;
 using Entity;
 using DAL;
+using System.Globalization;
 
 namespace ServiceBot
 {
@@ -20,12 +21,21 @@ namespace ServiceBot
     {
         private readonly TelegramBotClient _botClient;
         private readonly Dictionary<long, EstadoUsuario> _usuario;
-        private readonly ServicePaciente _servicePaciente;
+        private readonly PacienteService _pacienteService;
+        private readonly MedicoService _medicoService;
+        private readonly EspecialidadesService _especialidadesService;
+        private readonly CitaMedicaService _citaMedicaService;
+        private readonly HorarioCitaMedicaService _horarioCitaMedicaService;
+
         public BotService(string token)
         {
             _botClient = new TelegramBotClient(token);
             _usuario = new Dictionary<long, EstadoUsuario>();
-            _servicePaciente = new ServicePaciente(new PacienteRepository());
+            _pacienteService = new PacienteService(new PacienteRepository());
+            _medicoService = new MedicoService(new MedicoRepository());
+            _especialidadesService = new EspecialidadesService(new EspecialidadesRepository());
+            _citaMedicaService = new CitaMedicaService(new CitaMedicaRepository());
+            _horarioCitaMedicaService = new HorarioCitaMedicaService(new HorarioCitaMedicaRepository());
         }
         public async Task StartBotAsync()
         {
@@ -119,9 +129,19 @@ namespace ServiceBot
             {
                 await GestionarMenuPrincipalASync(data, chatId);
             }
-            else if (data == "medicina_general" || data == "pediatria" || data == "ginecologia" || data == "odontologia" || data == "psicologia")
+            else if (_usuario[chatId].Estado == "agendar" && _especialidadesService.EsUnaEspecialidad(int.Parse(data.Split('_')[1])))
             {
-                await MostrarDisponibilidadAsync(chatId, data);
+                await MostrarDisponibilidadAsync(chatId, int.Parse(data.Split('_')[1]));
+            }
+            else if (data.StartsWith("fecha_"))
+            {
+                var partes = data.Split('_');
+                var fechaTexto = partes[1];
+                var idMedico = int.Parse(partes[2]);
+                var fecha = DateTime.ParseExact(fechaTexto, "yyyyMMddHHmm", CultureInfo.InvariantCulture);
+                _usuario[chatId].FechaSeleccionada = fecha;
+                _usuario[chatId].IdMedico = idMedico.ToString(); 
+                await AgendarCitaAsync(chatId);
             }
             else
             {
@@ -161,7 +181,7 @@ namespace ServiceBot
 
         public async Task<bool> ConfirmarIdentificacionAsync(long chatId, string identificacion)
         {
-            string nombreUsuario = _servicePaciente.ConsultarNombre(int.Parse(identificacion));
+            string nombreUsuario = _pacienteService.ConsultarNombre(int.Parse(identificacion));
 
             if (string.IsNullOrEmpty(nombreUsuario))
             {
@@ -187,15 +207,19 @@ namespace ServiceBot
             switch (textolimpio)
             {
                 case "agendar":
+                    _usuario[chatId].Estado = "agendar";
                     await GestionAgendarCitaAsync(chatId);
                     break;
                 case "cancelar":
+                    _usuario[chatId].Estado = "cancelar";
                     await GestionCancelarCitaAsync(chatId);
                     break;
                 case "modificar":
+                    _usuario[chatId].Estado = "modificar";
                     await GestionModificarCitaAsync(chatId);
                     break;
                 case "salir":
+                    _usuario[chatId].Estado = "salir";
                     await CancelarConversacionAsync(chatId);
                     break;
                 default:
@@ -233,30 +257,86 @@ namespace ServiceBot
         }
         public async Task GestionAgendarCitaAsync(long chatId)
         {
-            await _botClient.SendTextMessageAsync(chatId, "🌟 ¡Bienvenid@ a la sección agendar cita! 🌟");
+            await _botClient.SendTextMessageAsync(chatId, "🌟 ¡Bienvenid@ a la sección agendar cita!🌟\n" +
+                "¡Aquí podrás ver nuestras especialidad disponibles!");
             await MostrarMenuEspecialidadesAsync(chatId);
         }
         public async Task MostrarMenuEspecialidadesAsync(long chatId)
         {
-            //llamar a EspecialidadService para obtener la lista de especialidades
-            var inlineKeyboard = new InlineKeyboardMarkup(new[]
+            var especialidades = _especialidadesService.Consultar();
+
+            if (especialidades == null || !especialidades.Any())
             {
-                new[] { InlineKeyboardButton.WithCallbackData("👩‍⚕️ Medicina General", "medicina_general") },
-                new[] { InlineKeyboardButton.WithCallbackData("👨‍⚕️ Pediatría", "pediatria") },
-                new[] { InlineKeyboardButton.WithCallbackData("👩‍⚕️ Ginecología", "ginecologia") },
-                new[] { InlineKeyboardButton.WithCallbackData("👨‍⚕️ Odontología", "odontologia") },
-                new[] { InlineKeyboardButton.WithCallbackData("👩‍⚕️ Psicología", "psicologia") }
-            });
+                await _botClient.SendTextMessageAsync(chatId, "⚠️ No se encontraron especialidades disponibles.");
+                return;
+            }
+
+            var botones = especialidades
+                .Select(e => InlineKeyboardButton.WithCallbackData($"🩺 {e.NombreCompleto}", $"especialidad_{e.Id}"))
+                .ToArray();
+
+            var inlineKeyboard = new InlineKeyboardMarkup(botones.Select(b => new[] { b }));
+
+            try
+            {
+                await _botClient.SendTextMessageAsync(
+                    chatId: chatId,
+                    text: "¿Qué especialidad médica deseas agendar? Por favor, selecciona una opción 👇",
+                    replyMarkup: inlineKeyboard
+                );
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error al enviar mensaje: {ex.Message}");
+            }
+        }
+
+        public async Task MostrarDisponibilidadAsync(long chatId, int idEspecialidad)
+        {
+            var nombre = _especialidadesService.ObtenerNombre(idEspecialidad);
+            await _botClient.SendTextMessageAsync(chatId, $"🌟Perfecto Has seleccionado la especialidad {nombre}.🌟");
+
+            var fechasDisponibles = _citaMedicaService.ObtenerFechasDisponibles(idEspecialidad);
+
+            if (fechasDisponibles.Count == 0)
+            {
+                await _botClient.SendTextMessageAsync(chatId, "⚠️Lo siento, no hay fechas disponibles para esta especialidad.");
+                return;
+            }
+
+            _usuario[chatId].Estado = "elegir_fecha_cita";
+
+            var botones = fechasDisponibles
+                .Select(f => new[]
+                {
+            InlineKeyboardButton.WithCallbackData(
+                $"🗓️ {f.Fecha:dd/MM/yyyy HH:mm}",
+                $"fecha_{f.Fecha:yyyyMMddHHmm}_{f.IdMedico}")
+                })
+                .ToList();
+
+            var inlineKeyboard = new InlineKeyboardMarkup(botones);
+
             await _botClient.SendTextMessageAsync(
                 chatId: chatId,
-                text: "¿Qué especialidad médica deseas agendar? Por favor, selecciona una opción 👇",
+                text: "¿Qué fecha deseas agendar? Por favor, selecciona una opción 👇",
                 replyMarkup: inlineKeyboard
             );
         }
-        public async Task MostrarDisponibilidadAsync(long chatId, string especialidad)
+        public async Task AgendarCitaAsync(long chatId)
         {
-            await _botClient.SendTextMessageAsync(chatId, $"Has seleccionado la especialidad: {especialidad}.");
-            //llamar a DisponibilidadService para obtener la disponibilidad segun la especialidad
+            var HorarioCitaMedica = new HorarioCitaMedica(_usuario[chatId].FechaSeleccionada);
+            await _horarioCitaMedicaService.Agregar(HorarioCitaMedica);
+
+            var citaMedica = new CitaMedica
+            {
+                IdMedico = int.Parse(_usuario[chatId].IdMedico),
+                IdPaciente = int.Parse(_usuario[chatId].Identificacion),
+                IdHorarioCita = _horarioCitaMedicaService.ObtenerIdPorFecha(HorarioCitaMedica.FechaHora),
+                Estado = "Agendada"
+            };
+            await _citaMedicaService.Agregar(citaMedica);
+            await EnviarMensajeConfirmacionAsync(chatId);
         }
         public async Task GestionModificarCitaAsync(long chatId)
         {
