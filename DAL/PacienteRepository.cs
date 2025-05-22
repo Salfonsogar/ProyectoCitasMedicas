@@ -63,7 +63,7 @@ namespace DAL
         }
         public override async Task<string> Modificar(Paciente entity)
         {
-            if (entity.Id == null)
+            if (entity.Id < 1)
             {
                 throw new ArgumentNullException(nameof(entity.Id), "La persona no puede ser nula");
             }

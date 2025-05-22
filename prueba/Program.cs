@@ -12,16 +12,18 @@ namespace prueba
     {
         static async Task Main()
         {
-            PacienteRepository Prepo = new PacienteRepository();
+            EspecialidadesRepository Prepo = new EspecialidadesRepository();
 
-            //List<CitaMedica> lista = Prepo.Consultar();
 
-            //foreach (var cita in lista)
-            //{
-            //    Console.WriteLine(
-            //        $"ID: {cita.Id}, Paciente: {cita.paciente.NombreCompleto}, Medico: {cita.medico.NombreCompleto}, Fecha y hora: {cita.horariocm.FechaHora}, Hora final: {cita.horariocm.HoraFin}, estado: {cita.Estado}"
-            //        );
-            //}
+
+            List<Especialidad> lista = Prepo.Consultar();
+
+            foreach (var espe in lista)
+            {
+                Console.WriteLine(
+                    $"ID: {espe.Id}, Paciente: {espe.NombreCompleto}"
+                    );
+            }
 
             //String idCita = await Prepo.Agregar(new CitaMedica
             //{
