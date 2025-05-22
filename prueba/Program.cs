@@ -12,7 +12,16 @@ namespace prueba
     {
         static async Task Main()
         {
-            PacienteRepository Prepo = new PacienteRepository();
+            HorarioCitaMedicaRepository Prepo = new HorarioCitaMedicaRepository();
+
+            //String idHorarioCM = await Prepo.Agregar(new HorarioCitaMedica
+            //{
+            //    FechaHora = new DateTime(2025, 5, 21, 9, 0, 0),
+            //    HoraFin = new TimeSpan(10, 0, 0)
+
+            //});
+
+            //Console.WriteLine(idHorarioCM);
 
             //String idMedico = await Prepo.Agregar(new Medico
             //{
@@ -39,6 +48,15 @@ namespace prueba
             //    );
             //}
 
+
+            //List<HorarioCitaMedica> lista = Prepo.Consultar();
+            //foreach (var horario in lista)
+            //{
+            //    Console.WriteLine(
+            //        $"ID: {horario.Id}, fecha y hora inicial: {horario.FechaHora}, hora inicio: {horario.HoraInicio}, hora fin: {horario.HoraFin}, duracion: {horario.Duracion}"
+            //        );
+            //}
+
             //Console.WriteLine(await Prepo.Eliminar(1));
 
             //await Prepo.Modificar(new Medico
@@ -56,6 +74,27 @@ namespace prueba
             //    IdEspecialidad = 2,
             //    IdHorarioMedico = 3
             //});
+
+            //String idHorarioMedico = await Prepo.Modificar(new HorarioCitaMedica
+            //{
+            //    Id = 1,
+            //    FechaHora = new DateTime(2025, 5, 22, 8, 0, 0),
+            //    HoraFin = new TimeSpan(8, 30, 0)  
+            //});
+
+            //String idHorarioMedico = await Prepo.Agregar(new HorarioMedico
+            //{
+            //    HoraInicio = new TimeSpan(10, 0, 0),
+            //    HoraFin = new TimeSpan(18, 0, 0)
+            //});
+
+            //await Prepo.Modificar(new Especialidad
+            //{
+            //    Id = 5,
+            //    NombreCompleto = "Oftalmologia"
+            //});
+
+            //Console.WriteLine(idHorarioMedico);
             Console.ReadKey();
         }
     }

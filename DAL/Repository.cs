@@ -35,6 +35,16 @@ namespace DAL
             }
         }
 
+        public string transformarDateTimeADate(DateTime fecha)
+        {
+            return fecha.ToString("yyyy-MM-dd");
+        }
+
+        public string transformarDateTimeATimeStamp(DateTime fecha)
+        {
+            return fecha.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
         public abstract List<T> Consultar();
         public abstract T Mappear(NpgsqlDataReader reader);
 
@@ -55,7 +65,7 @@ namespace DAL
             }
             else if (errorMessage.Contains("relation") && errorMessage.Contains("does not exist"))
             {
-                return "Error: La tabla no existe. Vuelva a ejecutar DDL";
+                return "Error: Tabla o columna no existente. Revise la query y/o vuelva a ejecutar DDL";
             }
 
             return errorMessage;

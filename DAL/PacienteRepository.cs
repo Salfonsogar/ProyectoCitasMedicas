@@ -56,7 +56,7 @@ namespace DAL
 
         public override async Task<string> Agregar(Paciente entity)
         {
-            string id_persona = await EjecutarSentenciaDB($"INSERT INTO personas (nombre_completo, tipo_documento, nro_documento, sexo, edad, telefono, correo, direccion, fecha_nacimiento) VALUES ('{entity.NombreCompleto}', '{entity.TipoDocumento}',{entity.NroDocumento},'{entity.Sexo}',{entity.Edad},'{entity.Telefono}','{entity.Correo}','{entity.Direccion}','{entity.FechaNacimiento.ToString("yyyy-MM-dd")}') RETURNING id_persona;");
+            string id_persona = await EjecutarSentenciaDB($"INSERT INTO personas (nombre_completo, tipo_documento, nro_documento, sexo, edad, telefono, correo, direccion, fecha_nacimiento) VALUES ('{entity.NombreCompleto}', '{entity.TipoDocumento}',{entity.NroDocumento},'{entity.Sexo}',{entity.Edad},'{entity.Telefono}','{entity.Correo}','{entity.Direccion}','{transformarDateTimeADate(entity.FechaNacimiento)}') RETURNING id_persona;");
             string id_paciente = await EjecutarSentenciaDB($"INSERT INTO pacientes (id_persona) VALUES ({id_persona}) RETURNING id_paciente;");
 
             return $"El paciente con el ID {id_paciente} fue agregado exitosamente";

@@ -10,9 +10,10 @@ namespace DAL
 {
     public class EspecialidadesRepository : Repository<Especialidad>
     {
-        public override Task<string> Agregar(Especialidad entity)
+        public override async Task<string> Agregar(Especialidad entity)
         {
-            throw new NotImplementedException();
+            string idEspecialidad = await EjecutarSentenciaDB($"INSERT INTO especialidades (nombre) VALUES ('{entity.NombreCompleto}') RETURNING id_especialidad;");
+            return $"La especialidad con el ID {idEspecialidad} fue agregado exitosamente";
         }
 
         public override List<Especialidad> Consultar()
@@ -32,23 +33,39 @@ namespace DAL
             return listaE;
         }
 
-        public override Task<string> Eliminar(int id)
+        public async override Task<string> Eliminar(int id)
         {
-            throw new NotImplementedException();
+            if (id < 1)
+            {
+                throw new ArgumentNullException(nameof(id), "El id no puede ser nula");
+            }
+            string idEliminado = await EjecutarSentenciaDB($"DELETE FROM especialidades WHERE id_especialidad = {id} RETURNING id_especialidad;");
+            return $"La especialidad con el ID {id} fue eliminada exitosamente";
         }
 
         public override Especialidad Mappear(NpgsqlDataReader reader)
         {
             Especialidad espe = new Especialidad();
-            espe.idEspecialidad = (int)reader["id_especialidad"];
-            espe.nombre = (string)reader["nombre_completo"];
+            espe.Id = (int)reader["id_especialidad"];
+            espe.NombreCompleto = (string)reader["nombre_completo"];
 
             return espe;
         }
 
-        public override Task<string> Modificar(Especialidad entity)
+        public override async Task<string> Modificar(Especialidad entity)
         {
-            throw new NotImplementedException();
+            if (entity.Id < 1)
+            {
+                throw new ArgumentNullException(nameof(entity.Id), "La persona no puede ser nula");
+            }
+
+            if (string.IsNullOrWhiteSpace(entity.NombreCompleto))
+            {
+                return "El nombre del medico no puede estar vacío";
+            }
+
+            string id_especialidad = await EjecutarSentenciaDB($"UPDATE especialidades SET nombre = '{entity.NombreCompleto}' WHERE id_especialidad = {entity.Id} RETURNING id_especialidad;");
+            return $"La especialidad con el ID {id_especialidad} fue modificada exitosamente";
         }
     }
 }

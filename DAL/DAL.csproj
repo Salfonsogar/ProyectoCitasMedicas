@@ -91,7 +91,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseDatos.cs" />
+    <Compile Include="CitaMedicaRepository.cs" />
     <Compile Include="EspecialidadRepository.cs" />
+    <Compile Include="HorarioCitaMedicaRepository.cs" />
+    <Compile Include="HorarioMedicoRepository.cs" />
     <Compile Include="IRepository.cs" />
     <Compile Include="MedicoRepository.cs" />
     <Compile Include="PacienteRepository.cs" />

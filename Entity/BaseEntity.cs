@@ -8,7 +8,7 @@ namespace Entity
 {
     public class BaseEntity
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         public override bool Equals(object obj)
         {

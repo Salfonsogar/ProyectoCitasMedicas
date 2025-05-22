@@ -8,9 +8,19 @@ namespace Entity
 {
     public class HorarioCitaMedica : Horario
     {
-        public DateTime FechaHora { get; }
-        public TimeSpan Duracion { get; }
-        public override TimeSpan HoraInicio => FechaHora.TimeOfDay;
-        public override TimeSpan HoraFin => FechaHora.TimeOfDay + Duracion;
+        public DateTime FechaHora { get; set; }
+        public TimeSpan Duracion { get; set; }
+        public override TimeSpan HoraInicio
+        {
+            get => FechaHora.TimeOfDay;
+            set => FechaHora = FechaHora.Date + value;
+        }
+
+        public override TimeSpan HoraFin
+        {
+            get => FechaHora.TimeOfDay + Duracion;
+            set => Duracion = value - FechaHora.TimeOfDay;
+        }
+
     }
 }

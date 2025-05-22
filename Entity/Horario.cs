@@ -8,7 +8,7 @@ namespace Entity
 {
     public abstract class Horario : BaseEntity
     {
-        public abstract TimeSpan HoraInicio { get; }
-        public abstract TimeSpan HoraFin { get; }
+        public abstract TimeSpan HoraInicio { get; set; }
+        public abstract TimeSpan HoraFin { get; set; }
     }
 }
