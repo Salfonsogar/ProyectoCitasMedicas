@@ -50,19 +50,43 @@ namespace DAL
           
         }
 
-        public override Task<string> Agregar(CitaMedica entity)
+        public override async Task<string> Agregar(CitaMedica entity)
         {
-            throw new NotImplementedException();
+            string idCitaMedica = await EjecutarSentenciaDB($"INSERT INTO citas_medicas (id_medico, id_paciente, id_horario_cita, estado) VALUES ({entity.medico.IdMedico}," +
+                $" {entity.paciente.IdPaciente}, {entity.horariocm.Id}, '{entity.Estado}')" +
+                $"RETURNING id_cita;");
+            return $"La cita con el ID {idCitaMedica} fue agregado exitosamente";
         }
 
-        public override Task<string> Eliminar(int id)
+        public override async Task<string> Eliminar(int id)
         {
-            throw new NotImplementedException();
+            if (id < 1)
+            {
+                throw new ArgumentNullException(nameof(id), "El id no puede ser nula");
+            }
+            string idEliminado = await EjecutarSentenciaDB($"DELETE FROM citas_medicas WHERE id_cita = {id} RETURNING id_cita;");
+            return $"La cita con el ID {idEliminado} fue eliminado exitosamente";
         }
 
-        public override Task<string> Modificar(CitaMedica entity)
+        public override async Task<string> Modificar(CitaMedica entity)
         {
-            throw new NotImplementedException();
+            if (entity.Id < 1)
+            {
+                throw new ArgumentNullException(nameof(entity.Id), "La cita no puede ser nula");
+            }
+
+            string idCitaMedica = await EjecutarSentenciaDB($"UPDATE citas_medicas SET id_medico = '{entity.medico.IdMedico}', id_paciente = '{entity.paciente.IdPaciente}', id_horario_cita = '{entity.horariocm.Id}' WHERE id_cita = {entity.Id} RETURNING id_cita;");
+            return $"La cita con el ID {idCitaMedica} fue modificada exitosamente";
+        }
+
+        public async Task<string> CancelarCita (CitaMedica entity)
+        {
+            if (entity.Id < 1)
+            {
+                throw new ArgumentNullException(nameof(entity.Id), "La cita no puede ser nula");
+            }
+            string idCitaMedicaCancelada = await EjecutarSentenciaDB($"UPDATE CITAS_MEDICAS SET estado = 'Cancelada' WHERE id_cita = {entity.Id} RETURNING id_cita; ");
+            return $"La cita con el ID {idCitaMedicaCancelada} fue cancelada exitosamente";
         }
     }
 }

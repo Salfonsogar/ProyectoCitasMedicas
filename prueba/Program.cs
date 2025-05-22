@@ -12,37 +12,39 @@ namespace prueba
     {
         static async Task Main()
         {
-            CitaMedicaRepository Prepo = new CitaMedicaRepository();
+            PacienteRepository Prepo = new PacienteRepository();
 
-            List<CitaMedica> lista = Prepo.Consultar();
+            //List<CitaMedica> lista = Prepo.Consultar();
 
-            foreach (var cita in lista)
-            {
-                Console.WriteLine(
-                    $"ID: {cita.Id}, Paciente: {cita.paciente.NombreCompleto}, Medico: {cita.medico.NombreCompleto}, Fecha y hora: {cita.horariocm.FechaHora}, Hora final: {cita.horariocm.HoraFin}, estado: {cita.Estado}"
-                    );
-            }
-            //String idHorarioCM = await Prepo.Agregar(new HorarioCitaMedica
+            //foreach (var cita in lista)
             //{
-            //    FechaHora = new DateTime(2025, 5, 21, 9, 0, 0),
-            //    HoraFin = new TimeSpan(10, 0, 0)
+            //    Console.WriteLine(
+            //        $"ID: {cita.Id}, Paciente: {cita.paciente.NombreCompleto}, Medico: {cita.medico.NombreCompleto}, Fecha y hora: {cita.horariocm.FechaHora}, Hora final: {cita.horariocm.HoraFin}, estado: {cita.Estado}"
+            //        );
+            //}
 
+            //String idCita = await Prepo.Agregar(new CitaMedica
+            //{
+            //    medico = new Medico { IdMedico = 4 },
+            //    paciente = new Paciente { IdPaciente = 1 },
+            //    horariocm = new HorarioCitaMedica { Id = 1 },
+            //    Estado = "Completada"
             //});
 
-            //Console.WriteLine(idHorarioCM);
+            //Console.WriteLine(idCita);
 
-            //String idMedico = await Prepo.Agregar(new Medico
+            //String idMedico = await Prepo.Agregar(new Paciente
             //{
-            //    NombreCompleto = "Fran Monguito Mongui",
+            //    NombreCompleto = "Julian Martinez Ospina",
             //    TipoDocumento = "CC",
-            //    NroDocumento = 111111,
+            //    NroDocumento = 10594786,
             //    Sexo = 'M',
             //    Edad = 28,
             //    Telefono = "314",
             //    Correo = "fran@monguitomemé.com",
             //    Direccion = "a",
             //    FechaNacimiento = new DateTime(1998, 01, 27)
-            //}, "1", "1");
+            //});
             //Console.WriteLine(idMedico);
 
             //List<Paciente> lista = Prepo.Consultar();
@@ -87,22 +89,25 @@ namespace prueba
             //{
             //    Id = 1,
             //    FechaHora = new DateTime(2025, 5, 22, 8, 0, 0),
-            //    HoraFin = new TimeSpan(8, 30, 0)  
+            //    HoraFin = new TimeSpan(8, 30, 0)
             //});
 
-            //String idHorarioMedico = await Prepo.Agregar(new HorarioMedico
+            //String idHorarioMedico = await Prepo.Agregar(new HorarioCitaMedica
             //{
-            //    HoraInicio = new TimeSpan(10, 0, 0),
+            //    FechaHora = new DateTime(2025, 5, 22, 8, 0, 0),
             //    HoraFin = new TimeSpan(18, 0, 0)
             //});
 
-            //await Prepo.Modificar(new Especialidad
+            //String idCita = await Prepo.Modificar(new CitaMedica
             //{
-            //    Id = 5,
-            //    NombreCompleto = "Oftalmologia"
+            //    Id = 3,
+            //    medico = new Medico { IdMedico = 6},
+            //    paciente = new Paciente { IdPaciente = 1},
+            //    horariocm = new HorarioCitaMedica { Id = 1},
+            //    Estado = "Pendiente"
             //});
 
-            //Console.WriteLine(idHorarioMedico);
+            //Console.WriteLine(idCita);
             Console.ReadKey();
         }
     }

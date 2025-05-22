@@ -59,7 +59,7 @@ namespace DAL
         {
             if (entity.Id < 1)
             {
-                throw new ArgumentNullException(nameof(entity.Id), "La persona no puede ser nula");
+                throw new ArgumentNullException(nameof(entity.Id), "El horario no puede ser nulo");
             }
 
             string idHorarioCitaMedica = await EjecutarSentenciaDB($"UPDATE horarios_citas SET fecha_hora = '{transformarDateTimeATimeStamp(entity.FechaHora)}', hora_inicio = '{entity.HoraInicio}', hora_fin = '{entity.HoraFin}' WHERE id_horario_cita = {entity.Id} RETURNING id_horario_cita;");
