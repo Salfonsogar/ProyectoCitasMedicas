@@ -12,8 +12,16 @@ namespace prueba
     {
         static async Task Main()
         {
-            HorarioCitaMedicaRepository Prepo = new HorarioCitaMedicaRepository();
+            CitaMedicaRepository Prepo = new CitaMedicaRepository();
 
+            List<CitaMedica> lista = Prepo.Consultar();
+
+            foreach (var cita in lista)
+            {
+                Console.WriteLine(
+                    $"ID: {cita.Id}, Paciente: {cita.paciente.NombreCompleto}, Medico: {cita.medico.NombreCompleto}, Fecha y hora: {cita.horariocm.FechaHora}, Hora final: {cita.horariocm.HoraFin}, estado: {cita.Estado}"
+                    );
+            }
             //String idHorarioCM = await Prepo.Agregar(new HorarioCitaMedica
             //{
             //    FechaHora = new DateTime(2025, 5, 21, 9, 0, 0),

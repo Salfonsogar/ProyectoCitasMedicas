@@ -13,7 +13,7 @@ namespace DAL
 
         public override List<Medico> Consultar()
         {
-            string sentencia = "SELECT m.ID_MEDICO, pr.NOMBRE_COMPLETO, e.ID_ESPECIALIDAD, hm.ID_HORARIO_MEDICO, pr.TIPO_DOCUMENTO, pr.NRO_DOCUMENTO, pr.SEXO, pr.EDAD, pr.TELEFONO, pr.CORREO, pr.DIRECCION, pr.FECHA_NACIMIENTO FROM medicos m JOIN personas pr ON m.ID_PERSONA = pr.ID_PERSONA JOIN especialidades e ON m.ID_ESPECIALIDAD  = e.ID_ESPECIALIDAD JOIN horarios_medicos hm ON m.ID_HORARIO_MEDICO = hm.ID_HORARIO_MEDICO;";
+            string sentencia = "SELECT m.ID_MEDICO, pr.NOMBRE_COMPLETO, e.ID_ESPECIALIDAD, hm.ID_HORARIO_MEDICO, pr.TIPO_DOCUMENTO, pr.NRO_DOCUMENTO, pr.SEXO FROM medicos m JOIN personas pr ON m.ID_PERSONA = pr.ID_PERSONA JOIN especialidades e ON m.ID_ESPECIALIDAD  = e.ID_ESPECIALIDAD JOIN horarios_medicos hm ON m.ID_HORARIO_MEDICO = hm.ID_HORARIO_MEDICO;";
             List<Medico> listaM = new List<Medico>();
             NpgsqlCommand cmd = new NpgsqlCommand(sentencia, conexion);
 
@@ -38,12 +38,6 @@ namespace DAL
             medico.TipoDocumento = (string)reader["tipo_documento"];
             medico.NroDocumento = (int)reader["nro_documento"];
             medico.Sexo = ((string)reader["sexo"])[0];
-            medico.Edad = (int)reader["edad"];
-            medico.Telefono = (string)reader["telefono"];
-            medico.Correo = (string)reader["correo"];
-            medico.Direccion = (string)reader["direccion"];
-            medico.FechaNacimiento = (DateTime)reader["fecha_nacimiento"];
-            medico.IdHorarioMedico = (int)reader["id_horario_medico"];
 
             return medico;
         }
