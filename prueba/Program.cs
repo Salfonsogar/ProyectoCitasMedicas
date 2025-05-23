@@ -13,41 +13,27 @@ namespace prueba
     {
         static async Task Main()
         {
-            var serviceM = new MedicoService(new MedicoRepository());
-            var serviceH = new HorarioMedicoService(new HorarioMedicoRepository());
+            EspecialidadesRepository Prepo = new EspecialidadesRepository();
 
-            var medicos = serviceM.FiltrarMedicosPorEspecialidad(1);
 
-                Console.WriteLine($"✅ Médicos encontrados para la especialidad 1:");
-                foreach (var medico in medicos)
-                {
-                    Console.WriteLine($"- {medico.NombreCompleto}");
-                    Console.WriteLine($"  ID: {medico.IdMedico}, Especialidad: {medico.IdEspecialidad}, Horario: {medico.IdHorarioMedico}");
-                    var h = serviceH.Consultar().Where(Ho => Ho.Id == medico.Id);
-                    foreach (var item in h)
-                    {
-                        Console.WriteLine($"fecha: {item.HoraInicio}-{item.HoraFin}");
-                    }
-                }
 
-            //    CitaMedicaRepository Prepo = new CitaMedicaRepository();
+            List<Especialidad> lista = Prepo.Consultar();
 
-            //    List<CitaMedica> lista = Prepo.Consultar();
+            foreach (var espe in lista)
+            {
+                Console.WriteLine(
+                    $"ID: {espe.Id}, Paciente: {espe.NombreCompleto}"
+                    );
+            }
 
-            //    foreach (var cita in lista)
-            //    {
-            //        Console.WriteLine(
-            //            $"ID: {cita.Id}, Paciente: {cita.paciente.NombreCompleto}, Medico: {cita.medico.NombreCompleto}, Fecha y hora: {cita.horariocm.FechaHora}, Hora final: {cita.horariocm.HoraFin}, estado: {cita.Estado}"
-            //            );
-            //    }
-            //String idHorarioCM = await Prepo.Agregar(new HorarioCitaMedica
+            //String idCita = await Prepo.Agregar(new CitaMedica
             //{
             //    FechaHora = new DateTime(2025, 5, 21, 9, 0, 0),
             //    HoraFin = new TimeSpan(10, 0, 0)
 
             //});
 
-            //Console.WriteLine(idHorarioCM);
+            //Console.WriteLine(idCita);
 
             //String idMedico = await Prepo.Agregar(new Medico
             //{
@@ -73,6 +59,15 @@ namespace prueba
             //        $"Nacimiento: {paciente.FechaNacimiento.ToShortDateString()}"
             //    );
             //}
+
+            List<Medico> lista = Prepo.Consultar();
+            foreach (var medico in lista)
+            {
+                Console.WriteLine(
+                    $"ID: {medico.IdMedico}, Nombre: {medico.NombreCompleto}, Especialidad: {medico.IdEspecialidad} " +
+                    $"Tipo Doc: {medico.TipoDocumento}, Nro Doc: {medico.NroDocumento}, Sexo: {medico.Sexo}"
+                    );
+            }
 
 
             //List<HorarioCitaMedica> lista = Prepo.Consultar();
