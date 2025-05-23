@@ -12,7 +12,6 @@ namespace Entity
         public int IdPaciente { get; set; }
         public DateTime Fecha { get; set; }
         public string Estado { get; set; }
-
         public Paciente paciente { get; set; }
         public Medico medico { get; set; }
     }

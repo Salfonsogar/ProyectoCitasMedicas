@@ -12,7 +12,7 @@ namespace DAL
     {
         public override List<CitaMedica> Consultar()
         {
-            string sentencia = "SELECT cm.id_cita, pp.nombre_completo, Pm.nombre_completo, hc.fecha_hora, hc.hora_fin, cm.estado FROM CITAS_MEDICAS CM JOIN MEDICOS M ON m.id_medico = cm.id_medico JOIN PERSONAS Pm ON m.ID_PERSONA = Pm.ID_PERSONA JOIN PACIENTES P ON p.id_paciente = cm.id_paciente JOIN PERSONAS pp ON p.ID_PERSONA = pp.ID_PERSONA JOIN HORARIOS_CITAS hc ON hc.id_horario_cita = cm.id_horario_cita;\r\n";
+            string sentencia = "SELECT cm.id_cita, pp.nombre_completo, pm.nombre_completo, cm.fecha_hora, cm.estado FROM citas_medicas cm JOIN medicos m ON m.id_medico = cm.id_medico JOIN personas pm ON m.id_persona = pm.id_persona JOIN pacientes p ON p.id_paciente = cm.id_paciente JOIN personas pp ON p.id_persona = pp.id_persona;";
             List<CitaMedica> listaM = new List<CitaMedica>();
             NpgsqlCommand cmd = new NpgsqlCommand(sentencia, conexion);
 
@@ -37,14 +37,10 @@ namespace DAL
             paciente.NombreCompleto = (string)reader["nombre_completo"];
             Medico medico = new Medico();
             medico.NombreCompleto = (string)reader["nombre_completo"];
-            HorarioCitaMedica hcm = new HorarioCitaMedica();
-            hcm.FechaHora = (DateTime)reader["fecha_hora"];
-            hcm.HoraFin = (TimeSpan)reader["hora_fin"];
+            cm.Fecha = (DateTime)reader["fecha_hora"];
             cm.Estado = (string)reader["estado"];
 
             cm.paciente = paciente;
-            cm.medico = medico;
-            cm.horariocm = hcm;
 
             return cm;
 
@@ -52,8 +48,8 @@ namespace DAL
 
         public override async Task<string> Agregar(CitaMedica entity)
         {
-            string idCitaMedica = await EjecutarSentenciaDB($"INSERT INTO citas_medicas (id_medico, id_paciente, id_horario_cita, estado) VALUES ({entity.medico.IdMedico}," +
-                $" {entity.paciente.IdPaciente}, {entity.horariocm.Id}, '{entity.Estado}')" +
+            string idCitaMedica = await EjecutarSentenciaDB($"INSERT INTO citas_medicas (id_medico, id_paciente, fecha_hora, estado) VALUES ({entity.medico.IdMedico}," +
+                $" {entity.paciente.IdPaciente}, '{transformarDateTimeATimeStamp(entity.Fecha)}', '{entity.Estado}')" +
                 $"RETURNING id_cita;");
             return $"La cita con el ID {idCitaMedica} fue agregado exitosamente";
         }
@@ -75,7 +71,7 @@ namespace DAL
                 throw new ArgumentNullException(nameof(entity.Id), "La cita no puede ser nula");
             }
 
-            string idCitaMedica = await EjecutarSentenciaDB($"UPDATE citas_medicas SET id_medico = '{entity.medico.IdMedico}', id_paciente = '{entity.paciente.IdPaciente}', id_horario_cita = '{entity.horariocm.Id}' WHERE id_cita = {entity.Id} RETURNING id_cita;");
+            string idCitaMedica = await EjecutarSentenciaDB($"UPDATE citas_medicas SET id_medico = '{entity.medico.IdMedico}', id_paciente = '{entity.paciente.IdPaciente}', fecha_hora = '{entity.Fecha.ToString("yyyy-MM-dd HH:mm:ss")}' WHERE id_cita = {entity.Id} RETURNING id_cita;");
             return $"La cita con el ID {idCitaMedica} fue modificada exitosamente";
         }
 
@@ -85,7 +81,7 @@ namespace DAL
             {
                 throw new ArgumentNullException(nameof(entity.Id), "La cita no puede ser nula");
             }
-            string idCitaMedicaCancelada = await EjecutarSentenciaDB($"UPDATE CITAS_MEDICAS SET estado = 'Cancelada' WHERE id_cita = {entity.Id} RETURNING id_cita; ");
+            string idCitaMedicaCancelada = await EjecutarSentenciaDB($"UPDATE citas_medicas SET estado = 'Cancelada' WHERE id_cita = {entity.Id} RETURNING id_cita; ");
             return $"La cita con el ID {idCitaMedicaCancelada} fue cancelada exitosamente";
         }
     }
