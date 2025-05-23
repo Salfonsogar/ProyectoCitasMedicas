@@ -46,7 +46,6 @@
     <Compile Include="FechaDisponibleDto.cs" />
     <Compile Include="GenericPersonaService.cs" />
     <Compile Include="GenericService.cs" />
-    <Compile Include="HorarioCitaMedicaService.cs" />
     <Compile Include="HorarioMedicoService.cs" />
     <Compile Include="IService.cs" />
     <Compile Include="MedicoService.cs" />

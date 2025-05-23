@@ -10,11 +10,10 @@ namespace Entity
     {
         public int IdMedico { get; set; }
         public int IdPaciente { get; set; }
-        public int IdHorarioCita { get; set; }
+        public DateTime Fecha { get; set; }
         public string Estado { get; set; }
 
         public Paciente paciente { get; set; }
         public Medico medico { get; set; }
-        public HorarioCitaMedica horariocm { get; set; }
     }
 }

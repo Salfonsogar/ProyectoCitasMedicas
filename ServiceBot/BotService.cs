@@ -25,7 +25,6 @@ namespace ServiceBot
         private readonly MedicoService _medicoService;
         private readonly EspecialidadesService _especialidadesService;
         private readonly CitaMedicaService _citaMedicaService;
-        private readonly HorarioCitaMedicaService _horarioCitaMedicaService;
 
         public BotService(string token)
         {
@@ -35,7 +34,6 @@ namespace ServiceBot
             _medicoService = new MedicoService(new MedicoRepository());
             _especialidadesService = new EspecialidadesService(new EspecialidadesRepository());
             _citaMedicaService = new CitaMedicaService(new CitaMedicaRepository());
-            _horarioCitaMedicaService = new HorarioCitaMedicaService(new HorarioCitaMedicaRepository());
         }
         public async Task StartBotAsync()
         {
@@ -103,14 +101,12 @@ namespace ServiceBot
                     {
                         estadoUsuario.Identificacion = message.Text;
                         estadoUsuario.Estado = "menu_principal";
-
-                        await MostrarMenuPrincipalASync(chatId);
                     }
                     return;
                 }
                 else if (estadoUsuario.Estado == "menu_principal")
                 {
-                    await GestionarMenuPrincipalASync(message.Text, chatId);
+                    await MostrarMenuPrincipalASync(chatId);
                     return;
                 }
                 await _botClient.SendTextMessageAsync(chatId, "⚠️ Por favor, ingresa primero tu número de identificación.");
@@ -125,22 +121,22 @@ namespace ServiceBot
             var chatId = callbackQuery.Message.Chat.Id;
             var data = callbackQuery.Data;
 
-            if (data == "agendar" || data == "cancelar" || data == "modificar" || data == "salir")
+            if (_usuario[chatId].Estado == "menu_principal_opcion")
             {
                 await GestionarMenuPrincipalASync(data, chatId);
             }
-            else if (_usuario[chatId].Estado == "agendar" && _especialidadesService.EsUnaEspecialidad(int.Parse(data.Split('_')[1])))
+            else if (_usuario[chatId].Estado == "eligiendo_especialidad" && _especialidadesService.EsUnaEspecialidad(int.Parse(data.Split('_')[1])))
             {
                 await MostrarDisponibilidadAsync(chatId, int.Parse(data.Split('_')[1]));
             }
-            else if (data.StartsWith("fecha_"))
+            else if (_usuario[chatId].Estado == "eligiendo_fecha_cita" && data.StartsWith("fecha_"))
             {
                 var partes = data.Split('_');
                 var fechaTexto = partes[1];
                 var idMedico = int.Parse(partes[2]);
                 var fecha = DateTime.ParseExact(fechaTexto, "yyyyMMddHHmm", CultureInfo.InvariantCulture);
                 _usuario[chatId].FechaSeleccionada = fecha;
-                _usuario[chatId].IdMedico = idMedico.ToString(); 
+                _usuario[chatId].IdMedico = idMedico.ToString();
                 await AgendarCitaAsync(chatId);
             }
             else
@@ -148,7 +144,7 @@ namespace ServiceBot
                 await EnviarMensajeErrorAsync(chatId);
             }
             await _botClient.AnswerCallbackQueryAsync(callbackQuery.Id);
-        }
+    }
         private Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
             Console.WriteLine($"Ocurrió un error en el bot: {exception.Message}");
@@ -207,7 +203,6 @@ namespace ServiceBot
             switch (textolimpio)
             {
                 case "agendar":
-                    _usuario[chatId].Estado = "agendar";
                     await GestionAgendarCitaAsync(chatId);
                     break;
                 case "cancelar":
@@ -237,6 +232,7 @@ namespace ServiceBot
                 new[] { InlineKeyboardButton.WithCallbackData("❌ Cancelar cita", "cancelar") },
                 new[] { InlineKeyboardButton.WithCallbackData("🔚 Finalizar", "salir") }
             });
+            _usuario[chatId].Estado = "menu_principal_opcion";
             await _botClient.SendTextMessageAsync(
                 chatId: chatId,
                 text: "¿Qué deseas hacer a continuación? Por favor, selecciona una opción 👇",
@@ -276,7 +272,7 @@ namespace ServiceBot
                 .ToArray();
 
             var inlineKeyboard = new InlineKeyboardMarkup(botones.Select(b => new[] { b }));
-
+            _usuario[chatId].Estado = "eligiendo_especialidad";
             try
             {
                 await _botClient.SendTextMessageAsync(
@@ -303,8 +299,7 @@ namespace ServiceBot
                 await _botClient.SendTextMessageAsync(chatId, "⚠️Lo siento, no hay fechas disponibles para esta especialidad.");
                 return;
             }
-
-            _usuario[chatId].Estado = "elegir_fecha_cita";
+            _usuario[chatId].Estado = "eligiendo_fecha_cita";
 
             var botones = fechasDisponibles
                 .Select(f => new[]
@@ -325,14 +320,11 @@ namespace ServiceBot
         }
         public async Task AgendarCitaAsync(long chatId)
         {
-            var HorarioCitaMedica = new HorarioCitaMedica(_usuario[chatId].FechaSeleccionada);
-            await _horarioCitaMedicaService.Agregar(HorarioCitaMedica);
-
             var citaMedica = new CitaMedica
             {
                 IdMedico = int.Parse(_usuario[chatId].IdMedico),
                 IdPaciente = int.Parse(_usuario[chatId].Identificacion),
-                IdHorarioCita = _horarioCitaMedicaService.ObtenerIdPorFecha(HorarioCitaMedica.FechaHora),
+                Fecha = _usuario[chatId].FechaSeleccionada,
                 Estado = "Agendada"
             };
             await _citaMedicaService.Agregar(citaMedica);

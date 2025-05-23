@@ -15,12 +15,12 @@ namespace Service
         {
             horarioMedicoRepository = new HorarioMedicoRepository();
         }
-        public List<Medico> FiltrarMedicosPorEspecialidad(int idEspecialidad)
+        public List<Medico> MedicosPorEspecialidad(int idEspecialidad)
         {
             return Consultar().Where(m => m.IdEspecialidad == idEspecialidad).ToList();
         }
 
-        public HorarioMedico ObtenerHorarioPorMedico(int idMedico)
+        public HorarioMedico ObtenerHorarioMedico(int idMedico)
         {
             var medico = Consultar().FirstOrDefault(m => m.Id == idMedico);
             if (medico == null)

@@ -12,6 +12,6 @@ namespace Entity
         public int IdEspecialidad { get; set; }
         public int IdHorarioMedico { get; set; }
         public List<CitaMedica> CitaMedicas { get; set; } 
-        public List<HorarioCitaMedica> CitasProgramadas { get; set; } 
+        public List<DateTime> HorariosCitasProgramadas { get; set; } 
     }
 }

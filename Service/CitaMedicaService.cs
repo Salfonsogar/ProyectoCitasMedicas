@@ -11,81 +11,65 @@ namespace Service
     public class CitaMedicaService : GenericService<CitaMedica, CitaMedicaRepository>
     {
         private readonly MedicoService _medicoService;
-        private readonly HorarioCitaMedicaService _horarioCitaMedicaService;
         public CitaMedicaService(CitaMedicaRepository repository) : base(repository)
         {
             _medicoService = new MedicoService(new MedicoRepository());
-            _horarioCitaMedicaService = new HorarioCitaMedicaService(new HorarioCitaMedicaRepository());
         }
 
         public List<FechaDisponibleDto> ObtenerFechasDisponibles(int idEspecialidad)
         {
-            int cantidad = 5;
+            var cantidad = 5;
+            var duracion = TimeSpan.FromMinutes(30);
             var fechasDisponibles = new List<FechaDisponibleDto>();
-
-            var medicos = _medicoService.FiltrarMedicosPorEspecialidad(idEspecialidad);
+            var medicos = _medicoService.MedicosPorEspecialidad(idEspecialidad);
 
             foreach (var medico in medicos)
             {
-                var horario = _medicoService.ObtenerHorarioPorMedico(medico.IdMedico);
-                if (horario == null) continue;
+                var fechasOcupadas = FechasOcupadasPorMedico(medico.IdMedico);
+                var horarioMedico = _medicoService.ObtenerHorarioMedico(medico.IdMedico);
+                var horaActual = horarioMedico.HoraInicio;
 
-                var fechasOcupadas = ObtenerCitasPorMedico(medico.IdMedico)
-                    .Select(c => ObtenerFechaCita(c))
-                    .Where(f => f != DateTime.MinValue)
-                    .ToList();
-
-                var horasDisponibles = BuscarHorasDisponibles(horario, fechasOcupadas, cantidad - fechasDisponibles.Count);
-
-                fechasDisponibles.AddRange(horasDisponibles.Select(h => new FechaDisponibleDto
+                for (int i = 0; i < 30; i++)
                 {
-                    IdMedico = medico.IdMedico,
-                    Fecha = h
-                }));
+                    var dia = DateTime.Now.AddDays(i);
 
-                if (fechasDisponibles.Count >= cantidad)
-                    break;
+                    if (dia.DayOfWeek == DayOfWeek.Saturday || dia.DayOfWeek == DayOfWeek.Sunday)continue;
+                    if(fechasDisponibles.Count >= cantidad) break;
+                    while (horaActual < horarioMedico.HoraFin)
+                    {
+                        bool estaOcupada = fechasOcupadas.Any(f => f.TimeOfDay == horaActual);
+
+                        if (!estaOcupada)
+                        {
+                            fechasDisponibles.Add(new FechaDisponibleDto
+                            {
+                                Fecha = dia.Date + horaActual,
+                                IdMedico = medico.IdMedico
+                            });
+                        }
+                        horaActual = horaActual.Add(duracion);
+                    }
+
+                    horaActual = horarioMedico.HoraInicio;
+                }
             }
-
             return fechasDisponibles;
         }
 
+        public List<DateTime> FechasOcupadasPorMedico(int idMedico)
+        {
+            var citas = ObtenerCitasPorMedico(idMedico);
+            var fechasOcupadas = new List<DateTime>();
+            foreach (var cita in citas)
+            {
+                fechasOcupadas.Add(cita.Fecha);
+            }
+            return fechasOcupadas;
+        }
 
         public List<CitaMedica> ObtenerCitasPorMedico(int idMedico)
         {
             return Consultar().Where(c => c.IdMedico == idMedico).ToList();
-        }
-        public List<DateTime> BuscarHorasDisponibles(HorarioMedico horario, List<DateTime> fechasOcupadas, int cantidad)
-        {
-            var fechasDisponibles = new List<DateTime>();
-            var duracion = HorarioCitaMedica.DuracionDefecto;
-
-            for (int i = 0; i < 30 && fechasDisponibles.Count < cantidad; i++)
-            {
-                var dia = DateTime.Today.AddDays(i);
-
-                if (dia.DayOfWeek == DayOfWeek.Saturday || dia.DayOfWeek == DayOfWeek.Sunday) continue;
-
-                var horaInicio = dia.Date.Add(horario.HoraInicio);
-                var horaFin = dia.Date.Add(horario.HoraFin);
-
-                for (var hora = horaInicio; hora + duracion <= horaFin && fechasDisponibles.Count < cantidad; hora = hora.Add(duracion))
-                {
-                    if (!EstaOcupada(hora,fechasOcupadas))
-                        fechasDisponibles.Add(hora);
-                }
-            }
-
-            return fechasDisponibles;
-        }
-        bool EstaOcupada(DateTime hora, List<DateTime> ocupadas)
-        {
-            return ocupadas.Any(f => f.Date == hora.Date && f.Hour == hora.Hour && f.Minute == hora.Minute);
-        }
-        public DateTime ObtenerFechaCita(CitaMedica cita)
-        {
-            var horarioCita = _horarioCitaMedicaService.Consultar()?.FirstOrDefault(h => h.Id == cita.IdHorarioCita);
-            return horarioCita != null ? horarioCita.FechaHora : DateTime.MinValue;
         }
     }
 }
