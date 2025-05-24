@@ -66,10 +66,13 @@ namespace Service
             }
             return fechasOcupadas;
         }
-
         public List<CitaMedica> ObtenerCitasPorMedico(int idMedico)
         {
             return Consultar().Where(c => c.IdMedico == idMedico).ToList();
+        }
+        public List<CitaMedica> ObtenerCitasPorPaciente(int idPaciente)
+        {
+            return Consultar().Where(c => c.IdPaciente == idPaciente).ToList();
         }
     }
 }

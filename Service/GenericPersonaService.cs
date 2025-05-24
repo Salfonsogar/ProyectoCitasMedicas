@@ -71,5 +71,33 @@ namespace Service
                 return null;
             }
         }
+
+        public virtual int ObtenerIdPersona(int identificacion)
+        {
+            try
+            {
+                var lista = repository.Consultar();
+                if (lista == null || lista.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron registros.");
+                    return -1;
+                }
+                var persona = lista.FirstOrDefault(p => p.NroDocumento == identificacion);
+                if (persona != null)
+                {
+                    return persona.Id;
+                }
+                else
+                {
+                    Console.WriteLine("No se encontró la persona con la identificación proporcionada.");
+                    return -1;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al consultar los datos: {ex.Message}");
+                return -1;
+            }
+        }
     }
 }

@@ -41,6 +41,7 @@ namespace DAL
             cm.Estado = (string)reader["estado"];
 
             cm.paciente = paciente;
+            cm.medico =medico;
 
             return cm;
 

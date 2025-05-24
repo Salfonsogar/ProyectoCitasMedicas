@@ -10,10 +10,10 @@ namespace Service
 {
     public class MedicoService : GenericPersonaService<Medico, MedicoRepository>
     {
-        private readonly HorarioMedicoRepository horarioMedicoRepository;
+        private readonly HorarioMedicoService horarioMedicoService;
         public MedicoService(MedicoRepository repository) : base(repository)
         {
-            horarioMedicoRepository = new HorarioMedicoRepository();
+            horarioMedicoService = new HorarioMedicoService(new HorarioMedicoRepository());
         }
         public List<Medico> MedicosPorEspecialidad(int idEspecialidad)
         {
@@ -22,12 +22,9 @@ namespace Service
 
         public HorarioMedico ObtenerHorarioMedico(int idMedico)
         {
-            var medico = Consultar().FirstOrDefault(m => m.Id == idMedico);
-            if (medico == null)
-                return null;
+            var medico = Consultar().FirstOrDefault(m => m.IdMedico == idMedico);
 
-            return horarioMedicoRepository.Consultar()
-                .FirstOrDefault(h => h.Id == medico.IdHorarioMedico);
+            return horarioMedicoService.ObtenerHorarioPorId(medico.IdHorarioMedico);
         }
     }
 }

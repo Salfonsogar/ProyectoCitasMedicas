@@ -13,5 +13,10 @@ namespace Service
         public HorarioMedicoService(HorarioMedicoRepository repository) : base(repository)
         {
         }
+
+        public HorarioMedico ObtenerHorarioPorId(int id)
+        {
+            return Consultar().FirstOrDefault(h => h.Id == id);
+        }
     }    
 }

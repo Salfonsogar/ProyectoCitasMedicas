@@ -11,7 +11,7 @@ namespace ServiceBot
         public string Estado { get; set; }
         public string Identificacion { get; set; }
         public DateTime FechaSeleccionada { get; set; }
-
+        public string IdCita { get; set; }
         public string IdMedico { get; set; }
     }
 

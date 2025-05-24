@@ -13,18 +13,71 @@ namespace prueba
     {
         static async Task Main()
         {
-            EspecialidadesRepository Prepo = new EspecialidadesRepository();
+            //    HorarioMedicoService service = new HorarioMedicoService(new HorarioMedicoRepository());
 
+            //    var horarios = service.Consultar();
+            //    foreach (var horario in horarios)
+            //    {
+            //        Console.WriteLine(
+            //            $"ID: {horario.Id}, Hora Inicio: {horario.HoraInicio}, Hora Fin: {horario.HoraFin}"
+            //            );
+            //    }
 
+            //    MedicoService service = new MedicoService(new MedicoRepository());
 
-            List<Especialidad> lista = Prepo.Consultar();
+            //var horario = service.ObtenerHorarioMedico(1);
+            //Console.WriteLine($"ID: {horario.Id}, Hora Inicio: {horario.HoraInicio}, Hora Fin: {horario.HoraFin}");
 
-            foreach (var espe in lista)
+            //var service = new CitaMedicaService(new CitaMedicaRepository());
+
+            //var cita = new CitaMedica
+            //{
+            //    medico = new Medico { IdMedico = 1 },
+            //    paciente = new Paciente { IdPaciente = 1 },
+            //    Fecha = DateTime.Now,
+            //    Estado = "Pendiente"
+            //};
+
+            //var resultado = await service.Agregar(cita);
+            //Console.WriteLine(resultado);
+            
+            var service = new CitaMedicaService(new CitaMedicaRepository());
+            var citas = service.Consultar();
+            if (citas == null || citas.Count == 0)
+            {
+                Console.WriteLine("No se encontraron citas para el paciente.");
+                return;
+            }
+            foreach (var cita in citas)
             {
                 Console.WriteLine(
-                    $"ID: {espe.Id}, Paciente: {espe.NombreCompleto}"
+                    $"ID: {cita.Id}, " +
+                    $"Fecha: {cita.Fecha}, Estado: {cita.Estado}"
                     );
             }
+
+            //var medicos = service.Consultar();
+            //foreach (var m in medicos)
+            //{
+            //    Console.WriteLine(
+            //        $"ID: {m.IdMedico}, Nombre: {m.NombreCompleto}, Especialidad: {m.IdEspecialidad} " +
+            //        $"Tipo Doc: {m.TipoDocumento}, Nro Doc: {m.NroDocumento}, Sexo: {m.Sexo}"
+            //        +$"id horario: {m.IdHorarioMedico}");
+            //}
+            //var horarios =  service.ObtenerHorarioMedico(1);
+            //Console.WriteLine($"ID: {horarios.Id}, Hora Inicio: {horarios.HoraInicio}, Hora Fin: {horarios.HoraFin}");
+            //EspecialidadesRepository Prepo = new EspecialidadesRepository();
+
+
+
+            //List<Especialidad> lista = Prepo.Consultar();
+
+            //foreach (var espe in lista)
+            //{
+            //    Console.WriteLine(
+            //        $"ID: {espe.Id}, Paciente: {espe.NombreCompleto}"
+            //        );
+            //}
 
             //String idCita = await Prepo.Agregar(new CitaMedica
             //{
@@ -60,14 +113,14 @@ namespace prueba
             //    );
             //}
 
-            List<Medico> lista = Prepo.Consultar();
-            foreach (var medico in lista)
-            {
-                Console.WriteLine(
-                    $"ID: {medico.IdMedico}, Nombre: {medico.NombreCompleto}, Especialidad: {medico.IdEspecialidad} " +
-                    $"Tipo Doc: {medico.TipoDocumento}, Nro Doc: {medico.NroDocumento}, Sexo: {medico.Sexo}"
-                    );
-            }
+            //List<Medico> lista = Prepo.Consultar();
+            //foreach (var medico in lista)
+            //{
+            //    Console.WriteLine(
+            //        $"ID: {medico.IdMedico}, Nombre: {medico.NombreCompleto}, Especialidad: {medico.IdEspecialidad} " +
+            //        $"Tipo Doc: {medico.TipoDocumento}, Nro Doc: {medico.NroDocumento}, Sexo: {medico.Sexo}"
+            //        );
+            //}
 
 
             //List<HorarioCitaMedica> lista = Prepo.Consultar();
