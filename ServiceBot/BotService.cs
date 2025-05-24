@@ -125,103 +125,136 @@ namespace ServiceBot
         {
             var chatId = callbackQuery.Message.Chat.Id;
             var data = callbackQuery.Data;
+            var estado = _usuario.ContainsKey(chatId) ? _usuario[chatId].Estado : "";
 
-            if (_usuario[chatId].Estado == "menu_principal_opcion")
+            if (data.StartsWith("opcion_")) 
             {
                 await GestionarMenuPrincipalASync(data, chatId);
+                return;
             }
-            else if (_usuario[chatId].Estado == "eligiendo_especialidad" && _especialidadesService.EsUnaEspecialidad(int.Parse(data.Split('_')[1])))
+
+            if (data.StartsWith("especialidad_") && _especialidadesService.EsUnaEspecialidad(int.Parse(data.Split('_')[1])))
             {
-                await MostrarDisponibilidadAsync(chatId, int.Parse(data.Split('_')[1]));
+                int idEspecialidad = int.Parse(data.Split('_')[1]);
+                _usuario[chatId].Estado = "eligiendo_especialidad";
+                await MostrarDisponibilidadAsync(chatId, idEspecialidad);
+                return;
             }
-            else if (_usuario[chatId].Estado == "eligiendo_fecha_cita" && data.StartsWith("fecha_"))
+
+            if (data.StartsWith("fecha_") && estado is "eligiendo_fecha_cita" || estado is "modificar_cita_fecha")
             {
                 var partes = data.Split('_');
                 var fechaTexto = partes[1];
                 var idMedico = int.Parse(partes[2]);
                 var fecha = DateTime.ParseExact(fechaTexto, "yyyyMMddHHmm", CultureInfo.InvariantCulture);
+
                 _usuario[chatId].FechaSeleccionada = fecha;
                 _usuario[chatId].IdMedico = idMedico.ToString();
-                await AgendarCitaAsync(chatId);
-            }
-            else if (_usuario[chatId].Estado == "confirmar_cita" && data == "confirmar")
-            {
-                await _botClient.SendTextMessageAsync(chatId, "🌟¡Perfecto! Has confirmado tu cita médica.🌟\n" +
-                    $"🗓️ Fecha: {_usuario[chatId].FechaSeleccionada.ToString("dd/MM/yyyy HH:mm")}\n" );
 
-                var idMedico = int.Parse(_usuario[chatId].IdMedico);
-                var idPaciente = _pacienteService.ObtenerIdPaciente(int.Parse(_usuario[chatId].Identificacion));
-                var citaMedica = new CitaMedica
+                if (estado == "eligiendo_fecha_cita")
                 {
-                    medico = new Medico { IdMedico = idMedico },
-                    paciente = new Paciente { IdPaciente = idPaciente },
-                    Fecha = _usuario[chatId].FechaSeleccionada,
-                    Estado = "Agendada"
-                };
-                await _citaMedicaService.Agregar(citaMedica);
-                await EnviarMensajeConfirmacionAsync(chatId);
-            }
-            else if (_usuario[chatId].Estado == "confirmar_cita" && data == "cancelar")
-            {
-                await CancelarConversacionAsync(chatId);
-            }
-            else if (_usuario[chatId].Estado == "modificar_cita" && data.StartsWith("cita_"))
-            {
-                var idCita = int.Parse(data.Split('_')[1]);
-                _usuario[chatId].IdCita = idCita.ToString();
-                var cita = _citaMedicaService.Consultar().FirstOrDefault(c => c.Id == idCita);
-                if (cita != null)
-                {
-                    _usuario[chatId].FechaSeleccionada = cita.Fecha;
-                    _usuario[chatId].IdMedico = cita.medico.IdMedico.ToString();
-                    _usuario[chatId].Estado = "modificar_cita_fecha";
-
-                    await _botClient.SendTextMessageAsync(chatId, $"🌟Has seleccionado esta cita médica.🌟\n" +
-                        $"🗓️ Fecha: {cita.Fecha.ToString("dd/MM/yyyy HH:mm")}\n" +
-                        $"👨‍⚕️ Médico: {cita.medico.NombreCompleto}\n" +
-                        $"👩‍⚕️ Paciente: {cita.paciente.NombreCompleto}");
-                    await MostrarDisponibilidadAsync(chatId, cita.medico.IdMedico);
+                    await AgendarCitaAsync(chatId);
                 }
                 else
                 {
-                    await _botClient.SendTextMessageAsync(chatId, "⚠️ No se encontró la cita seleccionada.");
+                    await ConfirmarNuevaFechaModificacion(chatId);
                 }
+                return;
             }
-            else if (_usuario[chatId].Estado == "modificar_cita_fecha" && data.StartsWith("fecha_"))
+            if(estado == "eligiendo_cita_para_cancelar")
             {
-                _usuario[chatId].FechaSeleccionada = DateTime.ParseExact(data.Split('_')[1], "yyyyMMddHHmm", CultureInfo.InvariantCulture);
-                await _botClient.SendTextMessageAsync(chatId, $"🌟Has seleccionado la nueva fecha {_usuario[chatId].FechaSeleccionada} para tu cita médica.🌟\n");
-                await _botClient.SendTextMessageAsync(chatId, "¿Qué deseas hacer a continuación? Por favor, selecciona una opción 👇", replyMarkup: new InlineKeyboardMarkup(new[]
+                int idCita = int.Parse(data.Split('_')[1]);
+                var cita = _citaMedicaService.ObtenerCitaPorId(idCita);
+                if (cita != null)
                 {
-                    new[] { InlineKeyboardButton.WithCallbackData("✅ Confirmar", "confirmar") },
-                    new[] { InlineKeyboardButton.WithCallbackData("❌ Cancelar", "cancelar") }
-                }));
-                if(data.StartsWith("confirmar"))
-                {
-                    var idMedico = int.Parse(_usuario[chatId].IdMedico);
-                    var idPaciente = _pacienteService.ObtenerIdPaciente(int.Parse(_usuario[chatId].Identificacion));
-                    var citaMedica = new CitaMedica
-                    {
-                        medico = new Medico { IdMedico = idMedico },
-                        paciente = new Paciente { IdPaciente = idPaciente },
-                        Fecha = _usuario[chatId].FechaSeleccionada,
-                        Estado = "Agendada"
-                    };
-                    await _citaMedicaService.Modificar(citaMedica);
-                    await EnviarMensajeConfirmacionAsync(chatId);
+                    await MostrarDatosCita(chatId, cita);
+                    //await CancelarCitaAsync(chatId, cita);
                 }
-                else if (data.StartsWith("cancelar"))
-                {
-                    await CancelarConversacionAsync(chatId);
-                }
+                return;
+            }
+            if (data == "confirmar")
+            {
+                await ConfirmarCita(chatId);
+                return;
+            }
 
+            if (data == "cancelar")
+            {
+                await CancelarConversacionAsync(chatId);
+                return;
+            }
+
+            if (data.StartsWith("cita_"))
+            {
+                int idCita = int.Parse(data.Split('_')[1]);
+                var cita = _citaMedicaService.ObtenerCitaPorId(idCita);
+                if (cita != null)
+                {
+                    _usuario[chatId].Estado = "modificar_cita_fecha";
+                    _usuario[chatId].IdCita = idCita.ToString();
+                    _usuario[chatId].FechaSeleccionada = cita.Fecha;
+                    _usuario[chatId].IdMedico = cita.medico.IdMedico.ToString();
+
+                    await MostrarDatosCita(chatId, cita);
+                    await ModificarCitaAsync(chatId, cita.medico.IdEspecialidad);
+                }
+                return;
+            }
+
+            await EnviarMensajeErrorAsync(chatId);
+            await _botClient.AnswerCallbackQueryAsync(callbackQuery.Id);
+        }
+        private async Task ConfirmarNuevaFechaModificacion(long chatId)
+        {
+            await _botClient.SendTextMessageAsync(chatId,
+                $"🌟Has seleccionado la nueva fecha {_usuario[chatId].FechaSeleccionada:dd/MM/yyyy HH:mm} para tu cita médica.🌟\n");
+
+            await _botClient.SendTextMessageAsync(chatId, "¿Qué deseas hacer a continuación?", replyMarkup: new InlineKeyboardMarkup(new[]
+            {
+                new[] { InlineKeyboardButton.WithCallbackData("✅ Confirmar", "confirmar") },
+                new[] { InlineKeyboardButton.WithCallbackData("❌ Cancelar", "cancelar") }
+            }));
+            _usuario[chatId].Estado = "confirmar_modificar";
+        }
+        private async Task ConfirmarCita(long chatId)
+        {
+            var usuario = _usuario[chatId];
+            var idMedico = int.Parse(usuario.IdMedico);
+            var idPaciente = _pacienteService.ObtenerIdPaciente(int.Parse(usuario.Identificacion));
+
+            var citaMedica = new CitaMedica
+            {
+                Id = string.IsNullOrEmpty(usuario.IdCita) ? 0 : int.Parse(usuario.IdCita),
+                medico = new Medico { IdMedico = idMedico },
+                paciente = new Paciente { IdPaciente = idPaciente },
+                Fecha = usuario.FechaSeleccionada,
+                Estado = "Pendiente"
+            };
+
+            if (citaMedica.Id > 0)
+            {
+                await _citaMedicaService.Modificar(citaMedica);
             }
             else
             {
-                await EnviarMensajeErrorAsync(chatId);
+                await _citaMedicaService.Agregar(citaMedica);
             }
-            await _botClient.AnswerCallbackQueryAsync(callbackQuery.Id);
-    }
+
+            await MostrarDatosCita(chatId, citaMedica);
+
+            usuario.Estado = "menu_principal";
+            usuario.IdCita = null;
+            usuario.FechaSeleccionada = default;
+            usuario.IdMedico = null;
+        }
+        private async Task MostrarDatosCita(long chatId, CitaMedica cita)
+        {
+            await _botClient.SendTextMessageAsync(chatId,
+                $"📋 Detalles de la Cita:\n" +
+                $"🗓️ Fecha: {cita.Fecha:dd/MM/yyyy HH:mm}\n" +
+                $"👨‍⚕️ Médico: {cita.medico.NombreCompleto}\n" +
+                $"👤 Paciente: {cita.paciente.NombreCompleto}");
+        }
         private Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
             Console.WriteLine($"Ocurrió un error en el bot: {exception.Message}");
@@ -275,47 +308,58 @@ namespace ServiceBot
             return true;
         }
 
-        public async Task GestionarMenuPrincipalASync(string textolimpio, long chatId)
+        private async Task GestionarMenuPrincipalASync(string data, long chatId)
         {
-            switch (textolimpio)
+            if (!_usuario.ContainsKey(chatId)) return;
+
+            switch (data)
             {
-                case "agendar":
+                case "opcion_agendar":
+                    _usuario[chatId].Estado = "eligiendo_especialidad";
                     await GestionAgendarCitaAsync(chatId);
                     break;
-                case "cancelar":
-                    _usuario[chatId].Estado = "cancelar";
-                    await GestionCancelarCitaAsync(chatId);
-                    break;
-                case "modificar":
-                    _usuario[chatId].Estado = "modificar";
+
+                case "opcion_modificar":
+                    _usuario[chatId].Estado = "eligiendo_cita_para_modificar";
                     await GestionModificarCitaAsync(chatId);
                     break;
-                case "salir":
-                    _usuario[chatId].Estado = "salir";
-                    await CancelarConversacionAsync(chatId);
+
+                case "opcion_cancelar":
+                    _usuario[chatId].Estado = "eligiendo_cita_para_cancelar";
+                    await GestionCancelarCitaAsync(chatId);
                     break;
+
+                case "opcion_salir":
+                    _usuario.Remove(chatId);
+                    await _botClient.SendTextMessageAsync(chatId, "👋 Has salido del sistema.");
+                    break;
+
                 default:
-                    await EnviarMensajeErrorAsync(chatId);
+                    await _botClient.SendTextMessageAsync(chatId, "❓ Opción no reconocida.");
                     break;
             }
         }
+
 
         public async Task MostrarMenuPrincipalASync(long chatId)
         {
             var inlineKeyboard = new InlineKeyboardMarkup(new[]
             {
-                new[] { InlineKeyboardButton.WithCallbackData("📅 Agendar cita", "agendar") },
-                new[] { InlineKeyboardButton.WithCallbackData("📋 Modificar citas", "modificar") },
-                new[] { InlineKeyboardButton.WithCallbackData("❌ Cancelar cita", "cancelar") },
-                new[] { InlineKeyboardButton.WithCallbackData("🔚 Finalizar", "salir") }
+                new[] { InlineKeyboardButton.WithCallbackData("📅 Agendar cita", "opcion_agendar") },
+                new[] { InlineKeyboardButton.WithCallbackData("📋 Modificar citas", "opcion_modificar") },
+                new[] { InlineKeyboardButton.WithCallbackData("❌ Cancelar cita", "opcion_cancelar") },
+                new[] { InlineKeyboardButton.WithCallbackData("🔚 Finalizar", "opcion_salir") }
             });
+
             _usuario[chatId].Estado = "menu_principal_opcion";
+
             await _botClient.SendTextMessageAsync(
                 chatId: chatId,
                 text: "¿Qué deseas hacer a continuación? Por favor, selecciona una opción 👇",
                 replyMarkup: inlineKeyboard
             );
         }
+
         public static string LimpiarTexto(string texto)
         {
             var textolimpio = new string(texto
@@ -378,7 +422,11 @@ namespace ServiceBot
             }
             _usuario[chatId].Estado = "eligiendo_fecha_cita";
 
-            var botones = fechasDisponibles
+            await CallBackFechas(chatId, fechasDisponibles);
+        }
+        public async Task CallBackFechas(long chatId,List<FechaDisponibleDto> fechaDisponibleDto)
+        {
+            var botones = fechaDisponibleDto
                 .Select(f => new[]
                 {
             InlineKeyboardButton.WithCallbackData(
@@ -391,7 +439,7 @@ namespace ServiceBot
 
             await _botClient.SendTextMessageAsync(
                 chatId: chatId,
-                text: "¿Qué fecha deseas agendar? Por favor, selecciona una opción 👇",
+                text: "¿Qué fecha deseas? Por favor, selecciona una opción 👇",
                 replyMarkup: inlineKeyboard
             );
         }
@@ -440,9 +488,10 @@ namespace ServiceBot
             _usuario[chatId].Estado = "modificar_cita";
         }
 
-        public async Task ModificarCitaAsync(long chatId)
+        public async Task ModificarCitaAsync(long chatId,int idEspecialidad)
         {
-
+            var fechasDisponibles = _citaMedicaService.ObtenerFechasDisponibles(idEspecialidad);
+            await CallBackFechas(chatId, fechasDisponibles);
         }
         public async Task GestionCancelarCitaAsync(long chatId)
         {

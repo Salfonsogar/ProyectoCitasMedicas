@@ -74,5 +74,9 @@ namespace Service
         {
             return Consultar().Where(c => c.IdPaciente == idPaciente).ToList();
         }
+        public CitaMedica ObtenerCitaPorId(int idCita)
+        {
+            return Consultar().FirstOrDefault(c => c.Id == idCita);
+        }
     }
 }
