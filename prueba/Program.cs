@@ -13,6 +13,26 @@ namespace prueba
     {
         static async Task Main()
         {
+            CitaMedicaRepository cr = new CitaMedicaRepository();
+
+            List<CitaMedica> lista = cr.Consultar();
+
+            foreach (var cita in lista)
+            {
+                Console.WriteLine(
+                    $"Id: {cita.Id}, IdPaciente: {cita.IdPaciente}, Nombre paciente: {cita.paciente.NombreCompleto}, IdMedico: {cita.IdMedico}, " +
+                    $"Nombre medico: {cita.medico.NombreCompleto}, fecha y hora: {cita.Fecha}, estado: {cita.Estado} "
+                    );
+            }
+
+            //var cita = cr.Agregar(new CitaMedica
+            //{
+            //    medico = new Medico { IdMedico = 8 },
+            //    paciente = new Paciente { IdPaciente = 1 },
+            //    Fecha = DateTime.Now,
+            //    Estado = "Pendiente"
+            //});
+
             //    HorarioMedicoService service = new HorarioMedicoService(new HorarioMedicoRepository());
 
             //    var horarios = service.Consultar();
@@ -40,21 +60,21 @@ namespace prueba
 
             //var resultado = await service.Agregar(cita);
             //Console.WriteLine(resultado);
-            
-            var service = new CitaMedicaService(new CitaMedicaRepository());
-            var citas = service.Consultar();
-            if (citas == null || citas.Count == 0)
-            {
-                Console.WriteLine("No se encontraron citas para el paciente.");
-                return;
-            }
-            foreach (var cita in citas)
-            {
-                Console.WriteLine(
-                    $"ID: {cita.Id}, " +
-                    $"Fecha: {cita.Fecha}, Estado: {cita.Estado}"
-                    );
-            }
+
+            //var service = new CitaMedicaService(new CitaMedicaRepository());
+            //var citas = service.Consultar();
+            //if (citas == null || citas.Count == 0)
+            //{
+            //    Console.WriteLine("No se encontraron citas para el paciente.");
+            //    return;
+            //}
+            //foreach (var cita in citas)
+            //{
+            //    Console.WriteLine(
+            //        $"ID: {cita.Id}, " +
+            //        $"Fecha: {cita.Fecha}, Estado: {cita.Estado}"
+            //        );
+            //}
 
             //var medicos = service.Consultar();
             //foreach (var m in medicos)

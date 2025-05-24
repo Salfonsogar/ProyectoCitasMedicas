@@ -12,7 +12,7 @@ namespace DAL
     {
         public override List<CitaMedica> Consultar()
         {
-            string sentencia = "SELECT cm.id_cita, pp.nombre_completo, pm.nombre_completo, cm.fecha_hora, cm.estado FROM citas_medicas cm JOIN medicos m ON m.id_medico = cm.id_medico JOIN personas pm ON m.id_persona = pm.id_persona JOIN pacientes p ON p.id_paciente = cm.id_paciente JOIN personas pp ON p.id_persona = pp.id_persona;";
+            string sentencia = "SELECT cm.id_cita, p.id_paciente, pp.nombre_completo AS nombre_paciente, m.id_medico, pm.nombre_completo AS nombre_medico, cm.fecha_hora, cm.estado FROM citas_medicas cm JOIN medicos m ON m.id_medico = cm.id_medico JOIN personas pm ON m.id_persona = pm.id_persona JOIN pacientes p ON p.id_paciente = cm.id_paciente JOIN personas pp ON p.id_persona = pp.id_persona;";
             List<CitaMedica> listaM = new List<CitaMedica>();
             NpgsqlCommand cmd = new NpgsqlCommand(sentencia, conexion);
 
@@ -34,14 +34,16 @@ namespace DAL
             cm.Id = (int)reader["id_cita"];
 
             Paciente paciente = new Paciente();
-            paciente.NombreCompleto = (string)reader["nombre_completo"];
+            paciente.NombreCompleto = (string)reader["nombre_paciente"];
+            cm.IdPaciente = (int)reader["id_paciente"];
             Medico medico = new Medico();
-            medico.NombreCompleto = (string)reader["nombre_completo"];
+            medico.NombreCompleto = (string)reader["nombre_medico"];
+            cm.IdMedico = (int)reader["id_medico"];
             cm.Fecha = (DateTime)reader["fecha_hora"];
             cm.Estado = (string)reader["estado"];
 
             cm.paciente = paciente;
-            cm.medico =medico;
+            cm.medico = medico;
 
             return cm;
 
