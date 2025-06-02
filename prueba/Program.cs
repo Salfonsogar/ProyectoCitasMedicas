@@ -13,25 +13,32 @@ namespace prueba
     {
         static async Task Main()
         {
-            CitaMedicaRepository cr = new CitaMedicaRepository();
+            HistoriaClinicaRepository Prepo = new HistoriaClinicaRepository();
 
-            List<CitaMedica> lista = cr.Consultar();
+            List<HistoriaClinica> lista = Prepo.Consultar();
 
-            foreach (var cita in lista)
+            foreach (var hc in lista)
             {
                 Console.WriteLine(
-                    $"Id: {cita.Id}, IdPaciente: {cita.IdPaciente}, Nombre paciente: {cita.paciente.NombreCompleto}, IdMedico: {cita.IdMedico}, " +
-                    $"Nombre medico: {cita.medico.NombreCompleto}, fecha y hora: {cita.Fecha}, estado: {cita.Estado} "
+                    $"Id: {hc.Id}, IdPaciente: {hc.IdPaciente}, Motivo consulta: {hc.MotivoConsulta}, Descripcion: {hc.Descripcion}, " +
+                    $"evolucion: {hc.Evolucion}, Causa externa: {hc.CausaExterna}," +
+                    $" signos vitales: {hc.SignosVitales}, diagnostico: {hc.Diagnostico}, examen fisico: {hc.ExamenFisico} "
                     );
             }
 
-            //var cita = cr.Agregar(new CitaMedica
+            //var cita = await Prepo.Agregar(new HistoriaClinica
             //{
-            //    medico = new Medico { IdMedico = 8 },
-            //    paciente = new Paciente { IdPaciente = 1 },
-            //    Fecha = DateTime.Now,
-            //    Estado = "Pendiente"
+            //    IdPaciente = 3,
+            //    MotivoConsulta = "Fiebre y tos",
+            //    Descripcion = "Síntomas respiratorios desde hace 5 días",
+            //    Evolucion = "En observación con antibióticos",
+            //    CausaExterna = "Contacto con persona infectada",
+            //    SignosVitales = "Frecuencia respiratoria elevada",
+            //    Diagnostico = "Infección respiratoria aguda",
+            //    ExamenFisico = "Presencia de crepitantes en pulmón derecho"
             //});
+
+            //Console.WriteLine(cita);
 
             //    HorarioMedicoService service = new HorarioMedicoService(new HorarioMedicoRepository());
 
@@ -126,7 +133,7 @@ namespace prueba
             //foreach (var paciente in lista)
             //{
             //    Console.WriteLine(
-            //        $"ID: {paciente.IdPaciente}, Nombre: {paciente.NombreCompleto}, " +
+            //        $"IDPaciente: {paciente.IdPaciente}, IDPersona: {paciente.Id} Nombre: {paciente.NombreCompleto}, " +
             //        $"Tipo Doc: {paciente.TipoDocumento}, Nro Doc: {paciente.NroDocumento}, Sexo: {paciente.Sexo}, Edad: {paciente.Edad}, " +
             //        $"Teléfono: {paciente.Telefono}, Correo: {paciente.Correo}, Dirección: {paciente.Direccion}, " +
             //        $"Nacimiento: {paciente.FechaNacimiento.ToShortDateString()}"

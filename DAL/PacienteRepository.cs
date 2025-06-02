@@ -11,7 +11,7 @@ namespace DAL
     {
         public override List<Paciente> Consultar()
         {
-            string sentencia = "SELECT p.id_paciente, pr.NOMBRE_COMPLETO, pr.TIPO_DOCUMENTO, pr.NRO_DOCUMENTO, pr.SEXO, pr.EDAD, pr.TELEFONO, pr.CORREO, pr.DIRECCION, pr.FECHA_NACIMIENTO FROM pacientes p JOIN personas pr ON p.ID_PERSONA = pr.ID_PERSONA;";
+            string sentencia = "SELECT p.id_persona, p.id_paciente, pr.NOMBRE_COMPLETO, pr.TIPO_DOCUMENTO, pr.NRO_DOCUMENTO, pr.SEXO, pr.EDAD, pr.TELEFONO, pr.CORREO, pr.DIRECCION, pr.FECHA_NACIMIENTO FROM pacientes p JOIN personas pr ON p.ID_PERSONA = pr.ID_PERSONA;";
             List<Paciente> listaP = new List<Paciente>();
             NpgsqlCommand cmd = new NpgsqlCommand(sentencia, conexion);
 
@@ -29,6 +29,7 @@ namespace DAL
         public override Paciente Mappear(NpgsqlDataReader reader)
         {
             Paciente paciente = new Paciente();
+            paciente.Id = (int)reader["id_persona"];
             paciente.IdPaciente = (int)reader["id_paciente"];
             paciente.NombreCompleto = (string)reader["nombre_completo"];
             paciente.TipoDocumento = (string)reader["tipo_documento"];
@@ -63,7 +64,7 @@ namespace DAL
         }
         public override async Task<string> Modificar(Paciente entity)
         {
-            if (entity.Id == null)
+            if (entity.Id < 1)
             {
                 throw new ArgumentNullException(nameof(entity.Id), "La persona no puede ser nula");
             }

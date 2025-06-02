@@ -93,6 +93,7 @@
     <Compile Include="BaseDatos.cs" />
     <Compile Include="CitaMedicaRepository.cs" />
     <Compile Include="EspecialidadRepository.cs" />
+    <Compile Include="HistoriaClinicaRepository.cs" />
     <Compile Include="HorarioMedicoRepository.cs" />
     <Compile Include="IRepository.cs" />
     <Compile Include="MedicoRepository.cs" />
