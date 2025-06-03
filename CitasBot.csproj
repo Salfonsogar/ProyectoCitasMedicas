@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -90,4 +91,164 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+=======
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{AA53126F-7DD2-4F72-85C2-597C4DACAC4F}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>CitasBot</RootNamespace>
+    <AssemblyName>CitasBot</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="DAL\DAL.csproj">
+      <Project>{54c70c62-2867-468d-aae0-90361c665241}</Project>
+      <Name>DAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="Entity\Entity.csproj">
+      <Project>{5da3b0b4-5b63-4b2c-a2d0-c39380e3871f}</Project>
+      <Name>Entity</Name>
+    </ProjectReference>
+    <ProjectReference Include="ServiceBot\ServiceBot.csproj">
+      <Project>{c7df19dd-9463-4f0c-88fc-634cbbddccc0}</Project>
+      <Name>ServiceBot</Name>
+    </ProjectReference>
+    <ProjectReference Include="Service\Service.csproj">
+      <Project>{eea37c7a-b470-460d-b0a0-5037a136c514}</Project>
+      <Name>Service</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bgSection.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btn_appG.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiappMedicos_bg.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiapp_bgLogin.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiapp_bgLoginv2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiPac.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\redeDoc.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btn_app2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\redePac.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiBTN1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiBTN2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiBTN3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btn_app3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btn_app4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiBTN4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\loginBG1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\loginBG2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\loginBG3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiappHClinicas_bg.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiBTN5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\buscarIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiappCrearHC_bg.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+>>>>>>> Stashed changes
 </Project>

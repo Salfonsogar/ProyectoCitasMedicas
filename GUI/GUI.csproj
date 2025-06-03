@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{87760855-CD55-43AD-8C24-116CD3B51853}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>GUI</RootNamespace>
+    <AssemblyName>GUI</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FormCrearHC.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCrearHC.Designer.cs">
+      <DependentUpon>FormCrearHC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormHistoriasClinicas.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormHistoriasClinicas.Designer.cs">
+      <DependentUpon>FormHistoriasClinicas.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormInicio.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormInicio.Designer.cs">
+      <DependentUpon>FormInicio.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormInicioMed.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormInicioMed.Designer.cs">
+      <DependentUpon>FormInicioMed.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormLogin.Designer.cs">
+      <DependentUpon>FormLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormMedicos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMedicos.Designer.cs">
+      <DependentUpon>FormMedicos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormMisHC.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMisHC.Designer.cs">
+      <DependentUpon>FormMisHC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormNavegador.cs" />
+    <Compile Include="FormPacientes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormPacientes.Designer.cs">
+      <DependentUpon>FormPacientes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormRegistro.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormRegistro.Designer.cs">
+      <DependentUpon>FormRegistro.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FormCrearHC.resx">
+      <DependentUpon>FormCrearHC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormHistoriasClinicas.resx">
+      <DependentUpon>FormHistoriasClinicas.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormInicio.resx">
+      <DependentUpon>FormInicio.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormInicioMed.resx">
+      <DependentUpon>FormInicioMed.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormLogin.resx">
+      <DependentUpon>FormLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMedicos.resx">
+      <DependentUpon>FormMedicos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMisHC.resx">
+      <DependentUpon>FormMisHC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormPacientes.resx">
+      <DependentUpon>FormPacientes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormRegistro.resx">
+      <DependentUpon>FormRegistro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bell_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bgSection.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\botIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btn_app.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btn_app2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btn_app3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btn_app4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btn_app155.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btn_appG.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\loginBG1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\loginBG2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\loginBG3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\logo_azul png.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\logo_azul.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\logo_blanco png.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\logo_blanco.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\logo_negro png.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\logo_remindi.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\min2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\mind1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\plantillapp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\redeDoc.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\redePac.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Remindi app.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Remindi.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiapp_bg.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiapp_bgLogin.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiapp_bgLoginv2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiappCrearHC_bg.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiappHClinicas_bg.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiappMedicos_bg.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiappPacientes_bg.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiBTN1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiBTN2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiBTN3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiBTN4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiBTN5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiDoc.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remindiPac.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\usericon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\userIcon2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DAL\DAL.csproj">
+      <Project>{54c70c62-2867-468d-aae0-90361c665241}</Project>
+      <Name>DAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Entity\Entity.csproj">
+      <Project>{5da3b0b4-5b63-4b2c-a2d0-c39380e3871f}</Project>
+      <Name>Entity</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ServiceBot\ServiceBot.csproj">
+      <Project>{c7df19dd-9463-4f0c-88fc-634cbbddccc0}</Project>
+      <Name>ServiceBot</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Service\Service.csproj">
+      <Project>{eea37c7a-b470-460d-b0a0-5037a136c514}</Project>
+      <Name>Service</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
